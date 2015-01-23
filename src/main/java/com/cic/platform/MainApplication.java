@@ -1,9 +1,9 @@
 package com.cic.platform;
 
 import com.cic.platform.map.BitmapObstacleMap;
+import com.cic.platform.mob.Character;
 import com.cic.platform.mob.CharacterDepiction;
 import com.cic.platform.mob.FrameSequences;
-import com.cic.platform.mob.Character;
 import com.jme3.app.SimpleApplication;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
@@ -14,9 +14,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Quad;
 import com.jme3.system.AppSettings;
-import com.jme3.texture.Image;
 import com.jme3.texture.Texture;
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -27,9 +25,9 @@ public class MainApplication extends SimpleApplication {
     private NotificationsPanel notifications;
 
     private Character guy = new Character();
+    private BitmapObstacleMap map;
     private Node guyNode;
     private Node mapNode;
-    Material mat;
 
     private HashMap<String, Boolean> keysDown = new HashMap<String, Boolean>();
 
@@ -92,10 +90,7 @@ public class MainApplication extends SimpleApplication {
 
         viewPort.setBackgroundColor(new ColorRGBA(0.3f, 0.5f, 0.8f, 1.0f));
 
-        makeHud();
-
-
-        CharacterDepiction cd = new CharacterDepiction();
+        CharacterDepiction cd = new CharacterDepiction(assetManager, "Textures/sprites.png");
         cd.addFrameSequence("stop:", FrameSequences.stand);
         cd.addFrameSequence("stop:L", FrameSequences.stand);
         cd.addFrameSequence("stop:R", FrameSequences.stand);
@@ -106,25 +101,16 @@ public class MainApplication extends SimpleApplication {
         cd.addFrameSequence("jump:L", FrameSequences.jumpRight);
         cd.addFrameSequence("jump:R", FrameSequences.jumpRight);
 
-        BitmapObstacleMap map = new BitmapObstacleMap(assetManager.loadTexture("Textures/map.png").getImage());
+        map = new BitmapObstacleMap(assetManager.loadTexture("Textures/map.png").getImage());
         guy.depiction = cd;
-        guy.obstacleMap = map;
         cd.character = guy;
         guy.stop();
         guy.setPosition(map.getWidth() / 2, map.getHeight() / 2);
 
-        //seq.start();
+        makeScene();
     }
 
-    private void makeHud() {
-        /*
-        batteryIcon = new Picture("HUD Battery Icon");
-        batteryIcon.setImage(assetManager, "Textures/battery-warning.png", true);
-
-        batteryIcon.setWidth(6 * 7);
-        batteryIcon.setHeight(10 * 7);
-        batteryIcon.setPosition(settings.getWidth() - (6 * 7) - 10, 10);
-        guiNode.attachChild(batteryIcon);    */
+    private void makeScene() {
 
         Node allNode = new Node("AllNode");
 
@@ -132,16 +118,7 @@ public class MainApplication extends SimpleApplication {
         Geometry g = new Geometry("lalala", q);
         guyNode = new Node("guy");
         guyNode.attachChild(g);
-
-        Texture spritesTexture = assetManager.loadTexture("Textures/sprites.png");
-
-        //Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat = new Material(assetManager, "Materials/ColoredTexturedSprite.j3md");
-        //mat.setColor("Color", new ColorRGBA(255f / 255f, 0f / 255f, 0f / 255f, 1));
-        mat.setTexture("ColorMap", spritesTexture);
-        mat.setInt("Index", 1);
-
-        guyNode.setMaterial(mat);
+        guyNode.setMaterial(guy.depiction.material);
 
         allNode.attachChild(guyNode);
 
@@ -248,9 +225,7 @@ public class MainApplication extends SimpleApplication {
 
         notifications.update();
 
-        mat.setInt("Index", guy.depiction.getFrameSequence().frameIndex);
-
-        guy.update(tpf);
+        guy.update(map, tpf);
         guy.depiction.update(tpf);
         guyNode.setLocalTranslation(guy.xPos - 5, guy.yPos, 0);
     }

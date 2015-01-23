@@ -28,14 +28,13 @@ public class Character extends MovableObject {
     private boolean falling = false;
 
     public CharacterDepiction depiction;
-    public ObstacleMap obstacleMap = null;
 
     public void setPosition(float x, float y){
         xPos = x;
         yPos = y;
     }
 
-    public void update(float tpf){
+    public void update(ObstacleMap obstacleMap, float tpf){
 
         Obstacle collidedWith = obstacleMap.move(this, tpf);
 
