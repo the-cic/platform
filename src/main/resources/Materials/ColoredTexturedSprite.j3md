@@ -1,0 +1,25 @@
+MaterialDef Colored Textured {
+
+    MaterialParameters {
+        Texture2D ColorMap
+        Color Color (Color)
+        Int Index
+    }
+
+    Technique {
+        VertexShader GLSL100:   Materials/ColoredTexturedSprite.vert
+        FragmentShader GLSL100: Materials/ColoredTexturedSprite.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+        }
+
+        RenderState {
+            Blend Alpha
+        }
+    }
+
+    Technique {
+    }
+
+}
