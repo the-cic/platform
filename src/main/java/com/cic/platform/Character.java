@@ -10,15 +10,9 @@ package com.cic.platform;
  */
 public class Character {
 
-    /*public static final int S_STANDING = 0; // doing nothing
-    public static final int S_WALKING =  1;
-    public static final int S_RUNNING =  2;
-    public static final int S_JUMPING =  4; // going up*/
-
     public float xPos = 0;
     public float yPos = 0;
     public float direction = 0; // +1 0 -1
-    //public float prevDirection = 0;
     public float xSpeed = 0;
     public float ySpeed = 0;
 
@@ -26,7 +20,6 @@ public class Character {
     public float runSpeed = 2;
     public float jumpSpeed = 3;
 
-    //private int state = S_STANDING;
     // intentionally
     private boolean walking = false;
     private boolean running = false;
@@ -45,29 +38,6 @@ public class Character {
     public void update(float tpf){
         xPos += xSpeed * tpf;
         yPos += ySpeed * tpf;
-
-        /*if (yPos > 0) {
-            ySpeed -= 10 * tpf;
-        } else {
-            if ((state & S_JUMPING) != 0) {
-                if (depiction.nextSequenceKey == null) {
-                    int stateWithoutJumping = state - S_JUMPING;
-                    switch (stateWithoutJumping) {
-                        case S_WALKING :
-                            walk();
-                            break;
-                        case S_RUNNING :
-                            run();
-                            break;
-                        default :
-                            stop();
-                    }
-                }
-                depiction.setNextSequence();
-            }
-            ySpeed = 0;
-            yPos = 0;
-        }*/
 
         if (falling) {
             if (yPos > 0) { // ground collision check
@@ -93,15 +63,9 @@ public class Character {
         }
     }
 
-    /*public int getState(){
-        return state;
-    }*/
-
     public void stop(){
         walking = false;
         running = false;
-        //depiction.setNextSequence("stop:"+(direction == 0 ? "" : ( direction > 0 ? "R" : "L")));
-        //doStop();
         if (!falling) {
             doStop();
         }
@@ -111,22 +75,6 @@ public class Character {
         depiction.setNextSequence("stop:"+(direction == 0 ? "" : ( direction > 0 ? "R" : "L")));
         xSpeed = 0;
     }
-
-    /*public void walkLeft(){
-        depiction.setNextSequence("walk:L");
-    }
-
-    public void walkRight(){
-        depiction.setNextSequence("walk:R");
-    }
-
-    public void runLeft(){
-        depiction.setNextSequence("run:L");
-    }
-
-    public void runRight(){
-        depiction.setNextSequence("run:R");
-    }*/
 
     public void lookLeft(){
         direction = -1;
@@ -139,9 +87,6 @@ public class Character {
     public void walk(){
         walking = true;
         running = false;
-        //depiction.setNextSequence("walk:"+(direction > 0 ? "R" : "L"));
-        //xSpeed = walkSpeed * direction;
-        //doWalk();
         if (!falling) {
             startWalking();
         }
@@ -155,9 +100,6 @@ public class Character {
     public void run(){
         walking = true;
         running = true;
-        //depiction.setNextSequence("run:"+(direction > 0 ? "R" : "L"));
-        //xSpeed = runSpeed * direction;
-        //doRun();
         if (!falling) {
             startRunning();
         }
@@ -170,12 +112,24 @@ public class Character {
 
     public void jump(boolean isJumping){
         jumping = isJumping;
-        //falling = true;
-        //depiction.setNextSequence("jump:"+(direction > 0 ? "R" : "L"));
-        //doJump();
         if (jumping && !falling) {
             doJump();
         }
+    }
+    
+    private void doJump() {
+        depiction.setNextSequence("jump:"+(direction > 0 ? "R" : "L"));
+        ySpeed = jumpSpeed;
+        falling = true;
+    }
+
+    private void doFall(float tpf){
+        ySpeed -= 10 * tpf;
+    }
+
+    private void doLand(){
+        ySpeed = 0;
+        falling = false;
     }
 
     /*public void onFrameSequenceChanged(String fullSeqName){
@@ -205,39 +159,4 @@ public class Character {
             doJump();
         }
     }*/
-
-    /*
-    private void doWalk() {
-        //state = S_WALKING;
-        xSpeed = walkSpeed * direction;
-    }
-
-    private void doRun() {
-        //state = S_RUNNING;
-        xSpeed = runSpeed * direction;
-    }*/
-
-    /*private void doStop() {
-        //state = S_STANDING;
-        xSpeed = 0;
-    }*/
-    private void doJump() {
-        depiction.setNextSequence("jump:"+(direction > 0 ? "R" : "L"));
-
-        /*if ((state & S_JUMPING) == 0) {
-            state |= S_JUMPING;
-            ySpeed = jumpSpeed;
-        }*/
-        ySpeed = jumpSpeed;
-        falling = true;
-    }
-
-    private void doFall(float tpf){
-        ySpeed -= 10 * tpf;
-    }
-
-    private void doLand(){
-        ySpeed = 0;
-        falling = false;
-    }
 }

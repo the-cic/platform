@@ -116,7 +116,7 @@ public class MainApplication extends SimpleApplication {
         batteryIcon.setHeight(10 * 7);
         batteryIcon.setPosition(settings.getWidth() - (6 * 7) - 10, 10);
         guiNode.attachChild(batteryIcon);    */
-        
+
         Node allNode = new Node("AllNode");
 
         Quad q = new Quad(1,1);
@@ -125,35 +125,33 @@ public class MainApplication extends SimpleApplication {
         guyNode.attachChild(g);
 
         Texture spritesTexture = assetManager.loadTexture("Textures/sprites.png");
-        
+
         //Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat = new Material(assetManager, "Materials/ColoredTexturedSprite.j3md");
-        mat.setColor("Color", new ColorRGBA(108f / 255f, 117f / 255f, 67f / 255f, 1));
+        //mat.setColor("Color", new ColorRGBA(255f / 255f, 0f / 255f, 0f / 255f, 1));
         mat.setTexture("ColorMap", spritesTexture);
         mat.setInt("Index", 1);
 
         guyNode.setMaterial(mat);
 
         allNode.attachChild(guyNode);
-        
+
         q = new Quad(20,10);
         g = new Geometry("lalala", q);
         mapNode = new Node("map");
         mapNode.attachChild(g);
-        
+
         Texture mapTexture = assetManager.loadTexture("Textures/map.png");
         Material mapMat = new Material(assetManager, "Common/MatDefs/Misc/ColoredTextured.j3md");
         mapMat.setTexture("ColorMap", mapTexture);
-        
-        
-        
+
         mapNode.setMaterial(mapMat);
         mapNode.setLocalTranslation(-10, -5, -0.1f);
-        
+
         allNode.attachChild(mapNode);
-        
+
         allNode.scale(0.5f);
-        
+
         rootNode.attachChild(allNode);
     }
 
@@ -161,19 +159,13 @@ public class MainApplication extends SimpleApplication {
         public void onAction(String name, boolean keyPressed, float tpf) {
             //log.info(name+" "+keyPressed);
 
-            boolean wasRun = keysDown.get("run");
-            boolean wasJump = keysDown.get("up");
             int direction = 0;
-            boolean turn = false;
 
-            boolean leftRight = false;
             if (name.equals("MoveLeft")) {
                 keysDown.put("left", keyPressed);
-                leftRight = true;
             }
             if (name.equals("MoveRight")) {
                 keysDown.put("right", keyPressed);
-                leftRight = true;
             }
             if (name.equals("MoveUp")) {
                 keysDown.put("up", keyPressed);
@@ -208,24 +200,6 @@ public class MainApplication extends SimpleApplication {
                 }
                 guy.jump(jump);
             }
-
-
-            /*
-            if (keysDown.get("up")){
-                guy.jump();
-            } else {
-                if (leftRight) {
-                    if (keysDown.get("left") && !keysDown.get("right")) {
-                        guy.walkLeft();
-                    } else
-                    if (!keysDown.get("left") && keysDown.get("right")) {
-                        guy.walkRight();
-                    } else
-                    if (!keysDown.get("left") && !keysDown.get("right")) {
-                        guy.stop();
-                    }
-                }
-            }*/
         }
     };
 
@@ -244,7 +218,7 @@ public class MainApplication extends SimpleApplication {
         notifications.put("p", "" + keysDown.toString());
 
         notifications.update();
-        
+
         mat.setInt("Index", guy.depiction.getFrameSequence().frameIndex);
 
         guy.update(tpf);
