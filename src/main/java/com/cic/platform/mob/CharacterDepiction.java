@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.cic.platform;
+package com.cic.platform.mob;
 
 import java.util.HashMap;
 
@@ -12,11 +12,11 @@ import java.util.HashMap;
  */
 public class CharacterDepiction {
 
-    HashMap<String, FrameSequence> sequences = new HashMap<String, FrameSequence>();
-    FrameSequence frameSequence = null;
-    String currentSequenceKey = null;
-    String nextSequenceKey = null;
-    Character character = null;
+    public HashMap<String, FrameSequence> sequences = new HashMap<String, FrameSequence>();
+    public FrameSequence frameSequence = null;
+    public String currentSequenceKey = null;
+    public String nextSequenceKey = null;
+    public Character character = null;
 
     public void addFrameSequence(String key, FrameSequence seq){
         sequences.put(key, seq);

@@ -2,22 +2,21 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.cic.platform;
+package com.cic.platform.mob;
+
+import com.cic.platform.map.ObstacleMap;
+import com.cic.platform.obstacle.Obstacle;
 
 /**
  *
  * @author Cic
  */
-public class Character {
+public class Character extends MovableObject {
 
-    public float xPos = 0;
-    public float yPos = 0;
     public float direction = 0; // +1 0 -1
-    public float xSpeed = 0;
-    public float ySpeed = 0;
 
-    public float walkSpeed = 1;
-    public float runSpeed = 2;
+    public float walkSpeed = 10;
+    public float runSpeed = 20;
     public float jumpSpeed = 3;
 
     // intentionally
@@ -29,6 +28,7 @@ public class Character {
     private boolean falling = false;
 
     public CharacterDepiction depiction;
+    public ObstacleMap obstacleMap = null;
 
     public void setPosition(float x, float y){
         xPos = x;
@@ -36,15 +36,14 @@ public class Character {
     }
 
     public void update(float tpf){
-        xPos += xSpeed * tpf;
-        yPos += ySpeed * tpf;
+
+        Obstacle collidedWith = obstacleMap.move(this, tpf);
 
         if (falling) {
-            if (yPos > 0) { // ground collision check
-                doFall(tpf);
-            } else { // landing
+            if (collidedWith == null) {
+                freeFall(tpf);
+            } else {
                 doLand();
-                yPos = 0; // ground level
                 if (walking) {
                     if (running) {
                         startRunning();
@@ -60,6 +59,8 @@ public class Character {
                 depiction.setNextSequence();
             }
         } else {
+            if (collidedWith != null) {
+            }
         }
     }
 
@@ -116,19 +117,19 @@ public class Character {
             doJump();
         }
     }
-    
+
     private void doJump() {
         depiction.setNextSequence("jump:"+(direction > 0 ? "R" : "L"));
         ySpeed = jumpSpeed;
         falling = true;
     }
 
-    private void doFall(float tpf){
+    private void freeFall(float tpf){
         ySpeed -= 10 * tpf;
     }
 
     private void doLand(){
-        ySpeed = 0;
+        //ySpeed = 0;
         falling = false;
     }
 

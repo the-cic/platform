@@ -1,5 +1,9 @@
 package com.cic.platform;
 
+import com.cic.platform.map.BitmapObstacleMap;
+import com.cic.platform.mob.CharacterDepiction;
+import com.cic.platform.mob.FrameSequences;
+import com.cic.platform.mob.Character;
 import com.jme3.app.SimpleApplication;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
@@ -10,7 +14,9 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Quad;
 import com.jme3.system.AppSettings;
+import com.jme3.texture.Image;
 import com.jme3.texture.Texture;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -100,9 +106,12 @@ public class MainApplication extends SimpleApplication {
         cd.addFrameSequence("jump:L", FrameSequences.jumpRight);
         cd.addFrameSequence("jump:R", FrameSequences.jumpRight);
 
+        BitmapObstacleMap map = new BitmapObstacleMap(assetManager.loadTexture("Textures/map.png").getImage());
         guy.depiction = cd;
+        guy.obstacleMap = map;
         cd.character = guy;
         guy.stop();
+        guy.setPosition(map.getWidth() / 2, map.getHeight() / 2);
 
         //seq.start();
     }
@@ -119,7 +128,7 @@ public class MainApplication extends SimpleApplication {
 
         Node allNode = new Node("AllNode");
 
-        Quad q = new Quad(1,1);
+        Quad q = new Quad(10,10);
         Geometry g = new Geometry("lalala", q);
         guyNode = new Node("guy");
         guyNode.attachChild(g);
@@ -136,21 +145,41 @@ public class MainApplication extends SimpleApplication {
 
         allNode.attachChild(guyNode);
 
-        q = new Quad(20,10);
+        q = new Quad(200,100);
         g = new Geometry("lalala", q);
         mapNode = new Node("map");
         mapNode.attachChild(g);
 
         Texture mapTexture = assetManager.loadTexture("Textures/map.png");
+
+        /*
+        Image image = mapTexture.getImage();
+        ByteBuffer data=image.getData(0);
+        data.rewind();
+        System.out.println(image);
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
+                //data.put((byte) 255);
+                data.put((byte) (Math.random() * 255));
+                data.put((byte) (Math.random() * 255));
+                data.put((byte) (Math.random() * 255));
+            }
+        }
+        image.setUpdateNeeded();
+        mapTexture.setImage(image);
+        */
+
         Material mapMat = new Material(assetManager, "Common/MatDefs/Misc/ColoredTextured.j3md");
         mapMat.setTexture("ColorMap", mapTexture);
 
         mapNode.setMaterial(mapMat);
-        mapNode.setLocalTranslation(-10, -5, -0.1f);
+        //mapNode.scale(1/5f);
+        mapNode.setLocalTranslation(0, 0, -1f);
 
         allNode.attachChild(mapNode);
 
-        allNode.scale(0.5f);
+        allNode.scale(0.05f);
+        allNode.setLocalTranslation(-0.05f*100/1f, -0.05f*50/1f, 0);
 
         rootNode.attachChild(allNode);
     }
@@ -223,6 +252,6 @@ public class MainApplication extends SimpleApplication {
 
         guy.update(tpf);
         guy.depiction.update(tpf);
-        guyNode.setLocalTranslation(guy.xPos, guy.yPos, 0);
+        guyNode.setLocalTranslation(guy.xPos - 5, guy.yPos, 0);
     }
 }

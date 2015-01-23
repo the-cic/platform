@@ -1,4 +1,4 @@
-package com.cic.platform;
+package com.cic.platform.mob;
 
 import java.util.ArrayList;
 
