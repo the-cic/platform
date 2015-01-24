@@ -3,11 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.cic.platform;
+package com.cic.platform.scene;
 
 import com.cic.platform.map.ObstacleMap;
 import com.cic.platform.mob.GameCharacter;
-import com.cic.platform.mob.Sprite;
 import com.jme3.scene.Node;
 import java.util.HashMap;
 

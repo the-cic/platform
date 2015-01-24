@@ -4,6 +4,7 @@
  */
 package com.cic.platform.mob;
 
+import com.cic.platform.scene.Sprite;
 import java.util.HashMap;
 
 /**

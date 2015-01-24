@@ -1,11 +1,12 @@
 package com.cic.platform;
 
+import com.cic.platform.scene.Scene;
 import com.cic.platform.map.BitmapObstacleMap;
-import com.cic.platform.mob.AnimatedSprite;
+import com.cic.platform.scene.AnimatedSprite;
 import com.cic.platform.mob.GameCharacter;
 import com.cic.platform.mob.CharacterDepiction;
 import com.cic.platform.mob.FrameSequences;
-import com.cic.platform.mob.Sprite;
+import com.cic.platform.scene.Sprite;
 import com.jme3.app.SimpleApplication;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;

@@ -5,8 +5,8 @@
 package com.cic.platform.map;
 
 import com.cic.platform.mob.MovableObject;
-import com.cic.platform.obstacle.Ground;
-import com.cic.platform.obstacle.Obstacle;
+import com.cic.platform.map.obstacle.Ground;
+import com.cic.platform.map.obstacle.Obstacle;
 import com.jme3.texture.Image;
 import java.nio.ByteBuffer;
 

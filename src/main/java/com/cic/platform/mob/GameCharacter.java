@@ -4,8 +4,9 @@
  */
 package com.cic.platform.mob;
 
+import com.cic.platform.scene.Sprite;
 import com.cic.platform.map.ObstacleMap;
-import com.cic.platform.obstacle.Obstacle;
+import com.cic.platform.map.obstacle.Obstacle;
 
 /**
  *

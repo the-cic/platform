@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.cic.platform.mob;
+package com.cic.platform.scene;
 
+import com.cic.platform.scene.Sprite;
 import com.jme3.asset.AssetManager;
 
 /**
