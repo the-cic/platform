@@ -92,8 +92,6 @@ public class Scene {
         }
         for (GameCharacter character : characters.values()) {
             character.update(obstacleMap, tpf);
-            Sprite sprite = character.getSprite();
-            sprite.setLocalTranslation(character.xPos - sprite.width/2, character.yPos, 0);
         }
     }
 }

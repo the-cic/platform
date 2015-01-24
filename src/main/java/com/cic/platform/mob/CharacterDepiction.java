@@ -21,9 +21,13 @@ public class CharacterDepiction {
     
     public GameCharacter character = null;
     public Sprite sprite;
+    public float spriteXOfs;
+    public float spriteYOfs;
 
-    public CharacterDepiction(Sprite sprite){
+    public CharacterDepiction(Sprite sprite, float spriteXOfs, float spriteYOfs){
         this.sprite = sprite;
+        this.spriteXOfs = spriteXOfs;
+        this.spriteYOfs = spriteYOfs;
     }
 
     public void addFrameSequence(String key, FrameSequence seq){
@@ -66,6 +70,7 @@ public class CharacterDepiction {
             setNextSequence();
         }
         sprite.setFrame(frameSequence.frameIndex);
+        sprite.setLocalTranslation(character.xPos + spriteXOfs, character.yPos + spriteYOfs, 0);
     }
 
     public FrameSequence getFrameSequence(){

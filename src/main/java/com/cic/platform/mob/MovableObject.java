@@ -14,7 +14,7 @@ public class MovableObject {
     public float yPos = 0;
     public float xSpeed = 0;
     public float ySpeed = 0;
-    public float boxWidth = 0.2f;
-    public float boxHeight = 1.8f;
-
+    public float boxWidth = 1f;
+    public float boxHeight = 1f;
+    
 }

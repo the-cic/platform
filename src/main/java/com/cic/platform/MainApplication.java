@@ -98,9 +98,9 @@ public class MainApplication extends SimpleApplication {
         viewPort.setBackgroundColor(new ColorRGBA(0.3f, 0.5f, 0.8f, 1.0f));
 
         makeScene();
-        
+
         guySprite = new Sprite(assetManager, "Textures/sprites.png", 8, 10, 10);
-        CharacterDepiction cd = new CharacterDepiction(guySprite);
+        CharacterDepiction cd = new CharacterDepiction(guySprite, -5, 0);
         cd.addFrameSequence("stop:", FrameSequences.stand);
         cd.addFrameSequence("stop:L", FrameSequences.stand);
         cd.addFrameSequence("stop:R", FrameSequences.stand);
@@ -110,22 +110,22 @@ public class MainApplication extends SimpleApplication {
         cd.addFrameSequence("run:R", FrameSequences.runRight);
         cd.addFrameSequence("jump:L", FrameSequences.jumpRight);
         cd.addFrameSequence("jump:R", FrameSequences.jumpRight);
-        
-        guy = new GameCharacter();
+
+        guy = new GameCharacter(2, 8);
         guy.setDepiction(cd);
 
         BitmapObstacleMap map = new BitmapObstacleMap(assetManager.loadTexture("Textures/map.png").getImage());
-        
+
         scene.setMap(map);
-        
+
         guy.stop();
         guy.setPosition(map.getWidth() / 2, map.getHeight() / 2);
 
         scene.addCharacter(guy);
-        
+
         /**/
         Sprite guy2Sprite = new Sprite(assetManager, "Textures/sprites.png", 8, 10, 10);
-        cd = new CharacterDepiction(guy2Sprite);
+        cd = new CharacterDepiction(guy2Sprite, -5, 0);
         cd.addFrameSequence("stop:", FrameSequences.stand);
         cd.addFrameSequence("stop:L", FrameSequences.stand);
         cd.addFrameSequence("stop:R", FrameSequences.stand);
@@ -135,14 +135,14 @@ public class MainApplication extends SimpleApplication {
         cd.addFrameSequence("run:R", FrameSequences.runRight);
         cd.addFrameSequence("jump:L", FrameSequences.jumpRight);
         cd.addFrameSequence("jump:R", FrameSequences.jumpRight);
-        
-        GameCharacter guy2 = new GameCharacter();
+
+        GameCharacter guy2 = new GameCharacter(2, 8);
         guy2.setDepiction(cd);
         guy2.jump(true);
         guy2.setPosition(map.getWidth() / 2, map.getHeight() / 2);
 
         scene.addCharacter(guy2);
-        
+
     }
 
     private void makeScene() {
@@ -188,7 +188,7 @@ public class MainApplication extends SimpleApplication {
 
         testSprite = new AnimatedSprite(assetManager, "Textures/sprites.png", 8, 10, 10);
         scene.addSprite(testSprite);
-        
+
         rootNode.attachChild(allNode);
     }
 

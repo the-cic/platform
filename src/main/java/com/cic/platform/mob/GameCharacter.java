@@ -29,6 +29,11 @@ public class GameCharacter extends MovableObject {
     private boolean falling = false;
 
     public CharacterDepiction depiction;
+    
+    public GameCharacter(float width, float height){
+        this.boxWidth = width;
+        this.boxHeight = height;
+    }
 
     public void setDepiction(CharacterDepiction depiction){
         this.depiction = depiction;
