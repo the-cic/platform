@@ -1,9 +1,11 @@
 package com.cic.platform;
 
 import com.cic.platform.map.BitmapObstacleMap;
-import com.cic.platform.mob.Character;
+import com.cic.platform.mob.AnimatedSprite;
+import com.cic.platform.mob.GameCharacter;
 import com.cic.platform.mob.CharacterDepiction;
 import com.cic.platform.mob.FrameSequences;
+import com.cic.platform.mob.Sprite;
 import com.jme3.app.SimpleApplication;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
@@ -24,10 +26,11 @@ public class MainApplication extends SimpleApplication {
 
     private NotificationsPanel notifications;
 
-    private Character guy = new Character();
-    private BitmapObstacleMap map;
-    private Node guyNode;
+    private GameCharacter guy;
+    private Sprite guySprite;
+    private AnimatedSprite testSprite;
     private Node mapNode;
+    private Scene scene;
 
     private HashMap<String, Boolean> keysDown = new HashMap<String, Boolean>();
 
@@ -84,13 +87,19 @@ public class MainApplication extends SimpleApplication {
         inputManager.addMapping("MoveUp", new KeyTrigger(KeyInput.KEY_UP));
         inputManager.addListener(actionListener, "MoveUp");
 
+        inputManager.addMapping("MoveDown", new KeyTrigger(KeyInput.KEY_DOWN));
+        inputManager.addListener(actionListener, "MoveDown");
+
         inputManager.addMapping("Run", new KeyTrigger(KeyInput.KEY_LSHIFT));
         inputManager.addListener(actionListener, "Run");
 
 
         viewPort.setBackgroundColor(new ColorRGBA(0.3f, 0.5f, 0.8f, 1.0f));
 
-        CharacterDepiction cd = new CharacterDepiction(assetManager, "Textures/sprites.png");
+        makeScene();
+        
+        guySprite = new Sprite(assetManager, "Textures/sprites.png", 8, 10, 10);
+        CharacterDepiction cd = new CharacterDepiction(guySprite);
         cd.addFrameSequence("stop:", FrameSequences.stand);
         cd.addFrameSequence("stop:L", FrameSequences.stand);
         cd.addFrameSequence("stop:R", FrameSequences.stand);
@@ -100,30 +109,48 @@ public class MainApplication extends SimpleApplication {
         cd.addFrameSequence("run:R", FrameSequences.runRight);
         cd.addFrameSequence("jump:L", FrameSequences.jumpRight);
         cd.addFrameSequence("jump:R", FrameSequences.jumpRight);
+        
+        guy = new GameCharacter();
+        guy.setDepiction(cd);
 
-        map = new BitmapObstacleMap(assetManager.loadTexture("Textures/map.png").getImage());
-        guy.depiction = cd;
-        cd.character = guy;
+        BitmapObstacleMap map = new BitmapObstacleMap(assetManager.loadTexture("Textures/map.png").getImage());
+        
+        scene.setMap(map);
+        
         guy.stop();
         guy.setPosition(map.getWidth() / 2, map.getHeight() / 2);
 
-        makeScene();
+        scene.addCharacter(guy);
+        
+        /**/
+        Sprite guy2Sprite = new Sprite(assetManager, "Textures/sprites.png", 8, 10, 10);
+        cd = new CharacterDepiction(guy2Sprite);
+        cd.addFrameSequence("stop:", FrameSequences.stand);
+        cd.addFrameSequence("stop:L", FrameSequences.stand);
+        cd.addFrameSequence("stop:R", FrameSequences.stand);
+        cd.addFrameSequence("walk:L", FrameSequences.walkRight);
+        cd.addFrameSequence("walk:R", FrameSequences.walkRight);
+        cd.addFrameSequence("run:L", FrameSequences.runRight);
+        cd.addFrameSequence("run:R", FrameSequences.runRight);
+        cd.addFrameSequence("jump:L", FrameSequences.jumpRight);
+        cd.addFrameSequence("jump:R", FrameSequences.jumpRight);
+        
+        GameCharacter guy2 = new GameCharacter();
+        guy2.setDepiction(cd);
+        guy2.jump(true);
+        guy2.setPosition(map.getWidth() / 2, map.getHeight() / 2);
+
+        scene.addCharacter(guy2);
+        
     }
 
     private void makeScene() {
+        scene = new Scene();
 
-        Node allNode = new Node("AllNode");
+        Node allNode = scene.getNode(); //new Node("AllNode");
 
-        Quad q = new Quad(10,10);
+        Quad q = new Quad(200,100);
         Geometry g = new Geometry("lalala", q);
-        guyNode = new Node("guy");
-        guyNode.attachChild(g);
-        guyNode.setMaterial(guy.depiction.material);
-
-        allNode.attachChild(guyNode);
-
-        q = new Quad(200,100);
-        g = new Geometry("lalala", q);
         mapNode = new Node("map");
         mapNode.attachChild(g);
 
@@ -158,6 +185,9 @@ public class MainApplication extends SimpleApplication {
         allNode.scale(0.05f);
         allNode.setLocalTranslation(-0.05f*100/1f, -0.05f*50/1f, 0);
 
+        testSprite = new AnimatedSprite(assetManager, "Textures/sprites.png", 8, 10, 10);
+        scene.addSprite(testSprite);
+        
         rootNode.attachChild(allNode);
     }
 
@@ -176,8 +206,13 @@ public class MainApplication extends SimpleApplication {
             if (name.equals("MoveUp")) {
                 keysDown.put("up", keyPressed);
             }
+            if (name.equals("MoveDown")) {
+                keysDown.put("down", keyPressed);
+                testSprite.loop(30);
+            }
             if (name.equals("Run")) {
                 keysDown.put("run", keyPressed);
+                testSprite.start(30);
             }
 
             if (keysDown.get("left") && !keysDown.get("right")) {
@@ -211,22 +246,22 @@ public class MainApplication extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-        notifications.put("a", "i:" + guy.depiction.getFrameSequence().frameIndex);
-        notifications.put("b", "d:" + guy.depiction.getFrameSequence().frameDuration);
-        notifications.put("c", "int:" + guy.depiction.getFrameSequence().canBeInterrupted);
+        if (guy != null) {
+            notifications.put("a", "i:" + guy.depiction.getFrameSequence().frameIndex);
+            notifications.put("b", "d:" + guy.depiction.getFrameSequence().frameDuration);
+            notifications.put("c", "int:" + guy.depiction.getFrameSequence().canBeInterrupted);
 
-        notifications.put("g0", "sqc:" + guy.depiction.currentSequenceKey);
-        notifications.put("g1", "sqn:" + guy.depiction.nextSequenceKey);
+            notifications.put("g0", "sqc:" + guy.depiction.currentSequenceKey);
+            notifications.put("g1", "sqn:" + guy.depiction.nextSequenceKey);
 
-        //notifications.put("h1", "st:" + guy.walking);
-        notifications.put("h2", "di:" + guy.direction);
+            //notifications.put("h1", "st:" + guy.walking);
+            notifications.put("h2", "di:" + guy.direction);
+        }
 
         notifications.put("p", "" + keysDown.toString());
 
         notifications.update();
 
-        guy.update(map, tpf);
-        guy.depiction.update(tpf);
-        guyNode.setLocalTranslation(guy.xPos - 5, guy.yPos, 0);
+        scene.update(tpf);
     }
 }

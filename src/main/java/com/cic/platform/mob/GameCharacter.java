@@ -11,13 +11,13 @@ import com.cic.platform.obstacle.Obstacle;
  *
  * @author Cic
  */
-public class Character extends MovableObject {
+public class GameCharacter extends MovableObject {
 
     public float direction = 0; // +1 0 -1
 
     public float walkSpeed = 10;
     public float runSpeed = 20;
-    public float jumpSpeed = 3;
+    public float jumpSpeed = 5;
 
     // intentionally
     private boolean walking = false;
@@ -29,6 +29,15 @@ public class Character extends MovableObject {
 
     public CharacterDepiction depiction;
 
+    public void setDepiction(CharacterDepiction depiction){
+        this.depiction = depiction;
+        this.depiction.character = this;
+    }
+    
+    public Sprite getSprite(){
+        return depiction.sprite;
+    }
+    
     public void setPosition(float x, float y){
         xPos = x;
         yPos = y;
@@ -61,6 +70,8 @@ public class Character extends MovableObject {
             if (collidedWith != null) {
             }
         }
+        
+        depiction.update(tpf);
     }
 
     public void stop(){
@@ -124,7 +135,7 @@ public class Character extends MovableObject {
     }
 
     private void freeFall(float tpf){
-        ySpeed -= 10 * tpf;
+        ySpeed -= 20 * tpf;
     }
 
     private void doLand(){

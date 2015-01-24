@@ -4,13 +4,11 @@
  */
 package com.cic.platform.mob;
 
-import com.jme3.asset.AssetManager;
-import com.jme3.material.Material;
-import com.jme3.texture.Texture;
 import java.util.HashMap;
 
 /**
- *
+ * Connection between character and sprite
+ * 
  * @author Cic
  */
 public class CharacterDepiction {
@@ -19,16 +17,12 @@ public class CharacterDepiction {
     public FrameSequence frameSequence = null;
     public String currentSequenceKey = null;
     public String nextSequenceKey = null;
-    public Character character = null;
+    
+    public GameCharacter character = null;
+    public Sprite sprite;
 
-    public Material material;
-
-    public CharacterDepiction(AssetManager assetManager, String textureFile){
-        Texture spritesTexture = assetManager.loadTexture(textureFile);
-        material = new Material(assetManager, "Materials/ColoredTexturedSprite.j3md");
-        //mat.setColor("Color", new ColorRGBA(255f / 255f, 0f / 255f, 0f / 255f, 1));
-        material.setTexture("ColorMap", spritesTexture);
-        material.setInt("Index", 1);
+    public CharacterDepiction(Sprite sprite){
+        this.sprite = sprite;
     }
 
     public void addFrameSequence(String key, FrameSequence seq){
@@ -70,7 +64,7 @@ public class CharacterDepiction {
         if (nextSequenceKey != null && frameSequence.canBeInterrupted) {
             setNextSequence();
         }
-        material.setInt("Index", frameSequence.frameIndex);
+        sprite.setFrame(frameSequence.frameIndex);
     }
 
     public FrameSequence getFrameSequence(){

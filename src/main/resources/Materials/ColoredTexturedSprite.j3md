@@ -4,6 +4,7 @@ MaterialDef Colored Textured {
         Texture2D ColorMap
         Color Color (Color)
         Int Index
+        Int Frames
     }
 
     Technique {
