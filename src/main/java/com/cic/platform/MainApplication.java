@@ -126,7 +126,7 @@ public class MainApplication extends SimpleApplication {
 
         scene.addCharacter(guy);
 
-        /**/
+        /** /
         Sprite guy2Sprite = new Sprite(assetManager, "Textures/sprites.png", 8, 2, 2);
         cd = new CharacterDepiction(guy2Sprite, -1, 0);
         cd.addFrameSequence("stop:", FrameSequences.stand);
@@ -145,7 +145,7 @@ public class MainApplication extends SimpleApplication {
         guy2.setPosition(map.getWidth()*1.1f / 2, map.getHeight() / 2);
         guy2.depiction.addAnchorBox(assetManager);
 
-        scene.addCharacter(guy2);
+        scene.addCharacter(guy2);*/
 
     }
 
@@ -191,7 +191,7 @@ public class MainApplication extends SimpleApplication {
         //allNode.scale(0.05f);
         float scale = 0.01f;
         allNode.scale(scale);
-        allNode.setLocalTranslation(-scale * 75 / 1f, -scale * 50/1f, 0);
+        allNode.setLocalTranslation(-scale * 85 / 1f, -scale * 50/1f, 0);
 
         testSprite = new AnimatedSprite(assetManager, "Textures/sprites.png", 8, 10, 10);
         scene.addSprite(testSprite);
