@@ -17,7 +17,7 @@ public class GameCharacter extends MovableObject {
 
     public float walkSpeed = 5;
     public float runSpeed = 10;
-    public float jumpSpeed = 10;
+    public float jumpSpeed = 15;
 
     // intentionally
     private boolean walking = false;

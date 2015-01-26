@@ -86,18 +86,26 @@ public class BitmapObstacleMap extends ObstacleMap {
             int nextMapI = (int) FastMath.floor(nextXPos / this.blockWidth);
 
             float nextBoxFarXPos = nextXPos + (mob.xSpeed == 0
-                    ? 0
+                    ? 0 // maybe check both sides of box?
                     : (mob.xSpeed > 0 ? mob.boxWidth / 2 : -mob.boxWidth / 2));
+            float nextBoxTopYPos = nextYPos + mob.boxHeight;
             int nextBoxFarMapI = (int) FastMath.floor(nextBoxFarXPos / this.blockWidth);
+            int nextBoxTopMapJ = (int) FastMath.floor(nextBoxTopYPos / this.blockWidth);
 
-            boolean freePassage = isFreePassage(nextBoxFarMapI, nextMapJ);
+            boolean freePassage = true;
+
+            for (int j = nextMapJ; j <= nextBoxTopMapJ; j++) {
+                // All the blocks from bottom to top of box must be passable
+                freePassage &= isFreePassage(nextBoxFarMapI, j);
+            }
+
             boolean hitWall = false;
 
             if (!freePassage) {
                 if (mob.xSpeed == 0) { // vertical move, if any
                     // no hit wall, but check for ceiling?
                 } else {
-                    if (mob.ySpeed == 0) { // horisontal move
+                    if (mob.ySpeed >= 0) { // horisontal move, or move up
                         hitWall = true;
                     } else {
                         float mobSpeedAspect = FastMath.abs(mob.xSpeed / mob.ySpeed);
@@ -110,33 +118,40 @@ public class BitmapObstacleMap extends ObstacleMap {
                                 ? nextYPos - nextMapJ * this.blockHeight // moving up
                                 : (nextMapJ + 1) * this.blockHeight - nextYPos; // moving down
 
-                        float blockHitAspet = FastMath.abs(blockHitX / blockHitY); // should always be positive, but just to be sure
-                        hitWall = mobSpeedAspect > blockHitAspet; // if mob speed is more horisontal than block hit aspect, mob hit block sideways
+                        float blockHitAspect = FastMath.abs(blockHitX / blockHitY); // should always be positive, but just to be sure
+                        hitWall = mobSpeedAspect > blockHitAspect; // if mob speed is more horisontal than block hit aspect, mob hit block sideways
                     }
                 }
             }
 
-            // do more checking for bound box
-
             if (!freePassage) {
-                if (!hitWall) {
+                if (!hitWall && mob.xSpeed != 0) {
                     // Not hit sideways, so landed on top. Can we stand on top, is block on top clear?
                     // If not, it is wall after all
                     hitWall = !isFreePassage(nextBoxFarMapI, nextMapJ + 1);
                 }
                 if (hitWall) {
+                    System.out.println("wall");
                     nextXPos = mob.xSpeed > 0
                             ? nextBoxFarMapI * this.blockWidth - (mob.boxWidth / 2)
                             : (nextBoxFarMapI + 1) * this.blockWidth + (mob.boxWidth / 2);
                     mob.xSpeed = 0;
                     // still falling
                 } else {
-                    mob.isFalling = false;
-                    nextYPos = (nextMapJ + 1) * this.blockHeight;
-                    float impactSpeed = mob.ySpeed;
-                    mob.xSpeed = 0;
-                    mob.ySpeed = 0;
-                    mob.onStopFalling(impactSpeed);
+                    if (mob.ySpeed <= 0) { // going down
+                        System.out.println("floor");
+                        mob.isFalling = false;
+                        nextYPos = (nextMapJ + 1) * this.blockHeight;
+                        float impactSpeed = mob.ySpeed;
+                        mob.xSpeed = 0;
+                        mob.ySpeed = 0;
+                        mob.onStopFalling(impactSpeed);
+                    } else { // going up
+                        System.out.println("head");
+                        nextYPos = nextBoxTopMapJ * this.blockHeight - mob.boxHeight;
+                        mob.ySpeed = 0;
+                        // still falling
+                    }
                 }
             }
         } else {
