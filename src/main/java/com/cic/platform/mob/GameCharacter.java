@@ -176,7 +176,19 @@ public class GameCharacter extends MovableObject {
 
     private void freeFall(float tpf){
         // apply gravity or any modification during falling
+        boolean wentUp = ySpeed > 0;
         ySpeed -= 50 * tpf;
+        if (wentUp && ySpeed < 0) {
+            onFallApex();
+        }
+    }
+
+    public void onFallApex(){
+        /*if (xSpeed == 0) {
+            if (walking) {
+                xSpeed = walkSpeed * direction;
+            }
+        }*/
     }
 
     /*

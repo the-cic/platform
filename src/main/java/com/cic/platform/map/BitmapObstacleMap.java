@@ -93,10 +93,15 @@ public class BitmapObstacleMap extends ObstacleMap {
             int nextBoxTopMapJ = (int) FastMath.floor(nextBoxTopYPos / this.blockWidth);
 
             boolean freePassage = true;
+            boolean freeToCeiling = true;
 
             for (int j = nextMapJ; j <= nextBoxTopMapJ; j++) {
                 // All the blocks from bottom to top of box must be passable
-                freePassage &= isFreePassage(nextBoxFarMapI, j);
+                boolean freeBlock = isFreePassage(nextBoxFarMapI, j);
+                freePassage &= freeBlock;
+                if (j < nextBoxTopMapJ) {
+                    freeToCeiling &= freeBlock;
+                }
             }
 
             boolean hitWall = false;
@@ -106,7 +111,9 @@ public class BitmapObstacleMap extends ObstacleMap {
                     // no hit wall, but check for ceiling?
                 } else {
                     if (mob.ySpeed >= 0) { // horisontal move, or move up
-                        hitWall = true;
+                        if (!freeToCeiling) {
+                            hitWall = true;
+                        }
                     } else {
                         float mobSpeedAspect = FastMath.abs(mob.xSpeed / mob.ySpeed);
 
@@ -126,12 +133,13 @@ public class BitmapObstacleMap extends ObstacleMap {
 
             if (!freePassage) {
                 if (!hitWall && mob.xSpeed != 0) {
+                    //System.out.println("initially not wall");
                     // Not hit sideways, so landed on top. Can we stand on top, is block on top clear?
                     // If not, it is wall after all
                     hitWall = !isFreePassage(nextBoxFarMapI, nextMapJ + 1);
                 }
                 if (hitWall) {
-                    System.out.println("wall");
+                    //System.out.println("wall");
                     nextXPos = mob.xSpeed > 0
                             ? nextBoxFarMapI * this.blockWidth - (mob.boxWidth / 2)
                             : (nextBoxFarMapI + 1) * this.blockWidth + (mob.boxWidth / 2);
@@ -139,7 +147,7 @@ public class BitmapObstacleMap extends ObstacleMap {
                     // still falling
                 } else {
                     if (mob.ySpeed <= 0) { // going down
-                        System.out.println("floor");
+                        //System.out.println("floor");
                         mob.isFalling = false;
                         nextYPos = (nextMapJ + 1) * this.blockHeight;
                         float impactSpeed = mob.ySpeed;
@@ -147,7 +155,7 @@ public class BitmapObstacleMap extends ObstacleMap {
                         mob.ySpeed = 0;
                         mob.onStopFalling(impactSpeed);
                     } else { // going up
-                        System.out.println("head");
+                        //System.out.println("head");
                         nextYPos = nextBoxTopMapJ * this.blockHeight - mob.boxHeight;
                         mob.ySpeed = 0;
                         // still falling
