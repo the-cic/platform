@@ -16,6 +16,7 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Quad;
+import com.jme3.shader.VarType;
 import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
 import java.util.HashMap;
@@ -62,6 +63,7 @@ public class MainApplication extends SimpleApplication {
     public void simpleInitApp() {
         /* Setup camera */
         flyCam.setEnabled(false);
+        cam.setParallelProjection(true);
 
         notifications = new NotificationsPanel(assetManager);
         notifications.getNode().setLocalTranslation(0, cam.getHeight(), 0);
@@ -99,8 +101,8 @@ public class MainApplication extends SimpleApplication {
 
         makeScene();
 
-        guySprite = new Sprite(assetManager, "Textures/sprites.png", 8, 10, 10);
-        CharacterDepiction cd = new CharacterDepiction(guySprite, -5, 0);
+        guySprite = new Sprite(assetManager, "Textures/sprites.png", 8, 2, 2);
+        CharacterDepiction cd = new CharacterDepiction(guySprite, -1f, 0);
         cd.addFrameSequence("stop:", FrameSequences.stand);
         cd.addFrameSequence("stop:L", FrameSequences.stand);
         cd.addFrameSequence("stop:R", FrameSequences.stand);
@@ -111,21 +113,22 @@ public class MainApplication extends SimpleApplication {
         cd.addFrameSequence("jump:L", FrameSequences.jumpRight);
         cd.addFrameSequence("jump:R", FrameSequences.jumpRight);
 
-        guy = new GameCharacter(2, 8);
+        guy = new GameCharacter(0.9f, 1.8f);
         guy.setDepiction(cd);
+        guy.depiction.addAnchorBox(assetManager);
 
         BitmapObstacleMap map = new BitmapObstacleMap(assetManager.loadTexture("Textures/map.png").getImage());
 
         scene.setMap(map);
 
-        guy.stop();
-        guy.setPosition(map.getWidth() / 2, map.getHeight() / 2);
+        guy.setStop();
+        guy.setPosition(100, 50);
 
         scene.addCharacter(guy);
 
         /**/
-        Sprite guy2Sprite = new Sprite(assetManager, "Textures/sprites.png", 8, 10, 10);
-        cd = new CharacterDepiction(guy2Sprite, -5, 0);
+        Sprite guy2Sprite = new Sprite(assetManager, "Textures/sprites.png", 8, 2, 2);
+        cd = new CharacterDepiction(guy2Sprite, -1, 0);
         cd.addFrameSequence("stop:", FrameSequences.stand);
         cd.addFrameSequence("stop:L", FrameSequences.stand);
         cd.addFrameSequence("stop:R", FrameSequences.stand);
@@ -136,10 +139,11 @@ public class MainApplication extends SimpleApplication {
         cd.addFrameSequence("jump:L", FrameSequences.jumpRight);
         cd.addFrameSequence("jump:R", FrameSequences.jumpRight);
 
-        GameCharacter guy2 = new GameCharacter(2, 8);
+        GameCharacter guy2 = new GameCharacter(1, 2);
         guy2.setDepiction(cd);
-        guy2.jump(true);
-        guy2.setPosition(map.getWidth() / 2, map.getHeight() / 2);
+        guy2.setJump(true);
+        guy2.setPosition(map.getWidth()*1.1f / 2, map.getHeight() / 2);
+        guy2.depiction.addAnchorBox(assetManager);
 
         scene.addCharacter(guy2);
 
@@ -156,6 +160,7 @@ public class MainApplication extends SimpleApplication {
         mapNode.attachChild(g);
 
         Texture mapTexture = assetManager.loadTexture("Textures/map.png");
+        mapTexture.setMagFilter(Texture.MagFilter.Nearest);
 
         /*
         Image image = mapTexture.getImage();
@@ -183,8 +188,10 @@ public class MainApplication extends SimpleApplication {
 
         allNode.attachChild(mapNode);
 
-        allNode.scale(0.05f);
-        allNode.setLocalTranslation(-0.05f*100/1f, -0.05f*50/1f, 0);
+        //allNode.scale(0.05f);
+        float scale = 0.01f;
+        allNode.scale(scale);
+        allNode.setLocalTranslation(-scale * 75 / 1f, -scale * 50/1f, 0);
 
         testSprite = new AnimatedSprite(assetManager, "Textures/sprites.png", 8, 10, 10);
         scene.addSprite(testSprite);
@@ -195,6 +202,9 @@ public class MainApplication extends SimpleApplication {
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean keyPressed, float tpf) {
             //log.info(name+" "+keyPressed);
+            if (name.equals("ResetPosition")) {
+                guy.setPosition(100, 50);
+            }
 
             int direction = 0;
 
@@ -227,20 +237,20 @@ public class MainApplication extends SimpleApplication {
             boolean jump = keysDown.get("up");
 
             if (direction == 0) {
-                guy.stop();
-                guy.jump(jump);
+                guy.setStop();
+                guy.setJump(jump);
             } else {
                 if (direction > 0) {
-                    guy.lookRight();
+                    guy.setLookRight();
                 } else {
-                    guy.lookLeft();
+                    guy.setLookLeft();
                 }
                 if (run) {
-                    guy.run();
+                    guy.setRun();
                 } else {
-                    guy.walk();
+                    guy.setWalk();
                 }
-                guy.jump(jump);
+                guy.setJump(jump);
             }
         }
     };

@@ -4,9 +4,8 @@
  */
 package com.cic.platform.mob;
 
-import com.cic.platform.scene.Sprite;
 import com.cic.platform.map.ObstacleMap;
-import com.cic.platform.map.obstacle.Obstacle;
+import com.cic.platform.scene.Sprite;
 
 /**
  *
@@ -16,9 +15,9 @@ public class GameCharacter extends MovableObject {
 
     public float direction = 0; // +1 0 -1
 
-    public float walkSpeed = 10;
-    public float runSpeed = 20;
-    public float jumpSpeed = 5;
+    public float walkSpeed = 5;
+    public float runSpeed = 10;
+    public float jumpSpeed = 10;
 
     // intentionally
     private boolean walking = false;
@@ -26,7 +25,7 @@ public class GameCharacter extends MovableObject {
     private boolean jumping = false;
 
     public CharacterDepiction depiction;
-    
+
     public GameCharacter(float width, float height){
         this.boxWidth = width;
         this.boxHeight = height;
@@ -36,16 +35,53 @@ public class GameCharacter extends MovableObject {
         this.depiction = depiction;
         this.depiction.character = this;
     }
-    
+
     public Sprite getSprite(){
         return depiction.sprite;
     }
-    
+
     public void setPosition(float x, float y){
         xPos = x;
         yPos = y;
     }
 
+    public void update(ObstacleMap obstacleMap, float tpf){
+
+        // ObstacleMap.move will set/unset isFalling and call onStartFalling or onStopFalling
+        obstacleMap.move(this, tpf);
+
+        if (isFalling) {
+            freeFall(tpf);
+        } else {
+        }
+
+        depiction.update(tpf);
+    }
+
+    @Override
+    public void onStartFalling(){
+        depiction.setNextSequence("jump:"+(direction > 0 ? "R" : "L"));
+    }
+
+    @Override
+    public void onStopFalling(float impactSpeed){
+        if (walking) {
+            if (running) {
+                startRunning();
+            } else {
+                startWalking();
+            }
+        } else {
+            doStop();
+        }
+        if (jumping) {
+            doJump();
+        }
+        depiction.startNextSequence();
+        // do something with speed if needed
+    }
+
+    /*
     public void update(ObstacleMap obstacleMap, float tpf){
 
         Obstacle collidedWith = obstacleMap.move(this, tpf);
@@ -73,11 +109,12 @@ public class GameCharacter extends MovableObject {
             if (collidedWith != null) {
             }
         }
-        
+
         depiction.update(tpf);
     }
+    */
 
-    public void stop(){
+    public void setStop(){
         walking = false;
         running = false;
         if (!isFalling) {
@@ -90,15 +127,15 @@ public class GameCharacter extends MovableObject {
         xSpeed = 0;
     }
 
-    public void lookLeft(){
+    public void setLookLeft(){
         direction = -1;
     }
 
-    public void lookRight(){
+    public void setLookRight(){
         direction = +1;
     }
 
-    public void walk(){
+    public void setWalk(){
         walking = true;
         running = false;
         if (!isFalling) {
@@ -111,7 +148,7 @@ public class GameCharacter extends MovableObject {
         xSpeed = walkSpeed * direction;
     }
 
-    public void run(){
+    public void setRun(){
         walking = true;
         running = true;
         if (!isFalling) {
@@ -124,7 +161,7 @@ public class GameCharacter extends MovableObject {
         xSpeed = runSpeed * direction;
     }
 
-    public void jump(boolean isJumping){
+    public void setJump(boolean isJumping){
         jumping = isJumping;
         if (jumping && !isFalling) {
             doJump();
@@ -138,13 +175,16 @@ public class GameCharacter extends MovableObject {
     }
 
     private void freeFall(float tpf){
-        ySpeed -= 20 * tpf;
+        // apply gravity or any modification during falling
+        ySpeed -= 50 * tpf;
     }
 
+    /*
     private void doLand(){
         //ySpeed = 0;
         isFalling = false;
     }
+    */
 
     /*public void onFrameSequenceChanged(String fullSeqName){
         //System.out.println(fullSeqName);

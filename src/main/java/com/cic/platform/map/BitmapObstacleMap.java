@@ -81,7 +81,16 @@ public class BitmapObstacleMap extends ObstacleMap {
         float nextYPos = mob.isFalling ? mob.yPos + mob.ySpeed * tpf : mob.yPos;
 
         if (mob.isFalling) {
-            
+            int nextMapJ = (int)Math.floor(nextYPos / this.blockHeight);
+            int nextMapI = (int) Math.floor(nextXPos / this.blockWidth);
+            if (!isFreePassage(nextMapI, nextMapJ)) {
+                mob.isFalling = false;
+                nextYPos = (nextMapJ + 1) * this.blockHeight;
+                float impactSpeed = mob.ySpeed;
+                mob.xSpeed = 0;
+                mob.ySpeed = 0;
+                mob.onStopFalling(impactSpeed);
+            }
         } else {
             // Block Y index that mob is standing on (block under mob)
             int nextMapJ = Math.round(nextYPos / this.blockHeight) - 1;
@@ -99,8 +108,8 @@ public class BitmapObstacleMap extends ObstacleMap {
                 if (!freePassage) {
                     // Adjust position to clear mob box
                     nextXPos = mob.xSpeed > 0
-                            ? nextBoxFarMapI * this.blockWidth - mob.boxWidth / 2
-                            : (nextBoxFarMapI + 1) * this.blockWidth + mob.boxWidth / 2;
+                            ? nextBoxFarMapI * this.blockWidth - (mob.boxWidth / 2)
+                            : (nextBoxFarMapI + 1) * this.blockWidth + (mob.boxWidth / 2);
                 }
             }
 
@@ -111,7 +120,7 @@ public class BitmapObstacleMap extends ObstacleMap {
                 mob.isFalling = true;
                 mob.onStartFalling();
             }
-            
+
             // Later consider stairs / slopes
 
             //Obstacle standingOn;

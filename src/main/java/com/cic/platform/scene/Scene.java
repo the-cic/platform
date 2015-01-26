@@ -12,16 +12,16 @@ import java.util.HashMap;
 
 /**
  * Coordinate system, sprites, map, background, foreground..
- * 
+ *
  * @author cic
  */
 public class Scene {
-   
+
     // 0,0 is bottom left corner
-    
+
     public float width;
     public float height;
-    
+
     private Node sceneNode;
     private Node spriteLayer;
     private Node backgroundLayer;
@@ -31,33 +31,33 @@ public class Scene {
     private HashMap<Integer, Sprite> sprites;
     private HashMap<Integer, GameCharacter> characters;
     private ObstacleMap obstacleMap;
-    
+
     public Scene(){
         sceneNode = new Node("Scene");
-        
+
         backgroundLayer = new Node("BackgroundLayer");
         spriteLayer = new Node("SpriteLayer");
         foregroundLayer = new Node("ForegroundLayer");
-        
-        backgroundLayer.setLocalTranslation(0, 0, -0.1f);
-        foregroundLayer.setLocalTranslation(0, 0, +0.1f);
-        
+
+        backgroundLayer.setLocalTranslation(0, 0, -0.001f);
+        foregroundLayer.setLocalTranslation(0, 0, +0.001f);
+
         sceneNode.attachChild(backgroundLayer);
         sceneNode.attachChild(spriteLayer);
         sceneNode.attachChild(foregroundLayer);
-        
+
         sprites = new HashMap<Integer, Sprite>();
-        characters = new HashMap<Integer, GameCharacter>();        
+        characters = new HashMap<Integer, GameCharacter>();
     }
-    
+
     public void setMap(ObstacleMap map){
         obstacleMap = map;
     }
-    
+
     public Node getNode(){
         return sceneNode;
     }
-    
+
     public Integer addSprite(Sprite sprite){
         Integer id = spriteIdCount;
         spriteIdCount++;
@@ -65,11 +65,11 @@ public class Scene {
         spriteLayer.attachChild(sprite);
         return id;
     }
-    
+
     public Sprite getSprite(Integer id){
         return sprites.get(id);
     }
-    
+
     public void removeSprite(Integer id){
         if (sprites.containsKey(id)) {
             Sprite sprite = sprites.get(id);
@@ -77,15 +77,18 @@ public class Scene {
             spriteLayer.detachChild(sprite);
         }
     }
-    
+
     public Integer addCharacter(GameCharacter character){
         Integer id = characterIdCount;
         characterIdCount++;
         characters.put(id, character);
         spriteLayer.attachChild(character.getSprite());
+        if (character.depiction.anchorBox != null) {
+            spriteLayer.attachChild(character.depiction.anchorBox);
+        }
         return id;
     }
-    
+
     public void update(float tpf) {
         for (Sprite sprite : sprites.values()) {
             sprite.update(tpf);
