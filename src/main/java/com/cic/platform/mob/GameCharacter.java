@@ -25,9 +25,6 @@ public class GameCharacter extends MovableObject {
     private boolean running = false;
     private boolean jumping = false;
 
-    // physically
-    private boolean falling = false;
-
     public CharacterDepiction depiction;
     
     public GameCharacter(float width, float height){
@@ -53,7 +50,7 @@ public class GameCharacter extends MovableObject {
 
         Obstacle collidedWith = obstacleMap.move(this, tpf);
 
-        if (falling) {
+        if (isFalling) {
             if (collidedWith == null) {
                 freeFall(tpf);
             } else {
@@ -83,7 +80,7 @@ public class GameCharacter extends MovableObject {
     public void stop(){
         walking = false;
         running = false;
-        if (!falling) {
+        if (!isFalling) {
             doStop();
         }
     }
@@ -104,7 +101,7 @@ public class GameCharacter extends MovableObject {
     public void walk(){
         walking = true;
         running = false;
-        if (!falling) {
+        if (!isFalling) {
             startWalking();
         }
     }
@@ -117,7 +114,7 @@ public class GameCharacter extends MovableObject {
     public void run(){
         walking = true;
         running = true;
-        if (!falling) {
+        if (!isFalling) {
             startRunning();
         }
     }
@@ -129,7 +126,7 @@ public class GameCharacter extends MovableObject {
 
     public void jump(boolean isJumping){
         jumping = isJumping;
-        if (jumping && !falling) {
+        if (jumping && !isFalling) {
             doJump();
         }
     }
@@ -137,7 +134,7 @@ public class GameCharacter extends MovableObject {
     private void doJump() {
         depiction.setNextSequence("jump:"+(direction > 0 ? "R" : "L"));
         ySpeed = jumpSpeed;
-        falling = true;
+        isFalling = true;
     }
 
     private void freeFall(float tpf){
@@ -146,7 +143,7 @@ public class GameCharacter extends MovableObject {
 
     private void doLand(){
         //ySpeed = 0;
-        falling = false;
+        isFalling = false;
     }
 
     /*public void onFrameSequenceChanged(String fullSeqName){

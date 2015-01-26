@@ -14,7 +14,7 @@ import com.cic.platform.map.obstacle.Obstacle;
  *
  * @author Cic
  */
-public class ObstacleMap {
+public abstract class ObstacleMap {
 
     public Obstacle move(MovableObject mob, float tpf){
         float nextXPos = mob.xPos + mob.xSpeed * tpf;
@@ -41,6 +41,13 @@ public class ObstacleMap {
 
         return collision;
     }
+    
+    
+    
+    
+
+    public abstract float getWidth();
+    public abstract float getHeight();
 
     public Obstacle collisionCheck(float x1, float y1, float x2, float y2, MovableObject mob){
         if (y2 < 0) {
