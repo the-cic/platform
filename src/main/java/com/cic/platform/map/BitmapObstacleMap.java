@@ -73,6 +73,9 @@ public class BitmapObstacleMap extends ObstacleMap {
     }
 
     private boolean isFreePassage(int i, int j) {
+        if (i < 0 || j < 0 || i >= bitmapWidth || j >= bitmapHeight) {
+            return false;
+        }
         return blocks[j][i] == 0;
     }
 

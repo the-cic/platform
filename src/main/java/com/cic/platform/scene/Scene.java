@@ -52,6 +52,8 @@ public class Scene {
 
     public void setMap(ObstacleMap map){
         obstacleMap = map;
+        width = map.getWidth();
+        height = map.getHeight();
     }
 
     public Node getNode(){

@@ -6,6 +6,7 @@ import com.cic.platform.scene.AnimatedSprite;
 import com.cic.platform.mob.GameCharacter;
 import com.cic.platform.mob.CharacterDepiction;
 import com.cic.platform.mob.FrameSequences;
+import com.cic.platform.scene.SceneView;
 import com.cic.platform.scene.Sprite;
 import com.jme3.app.SimpleApplication;
 import com.jme3.input.KeyInput;
@@ -13,6 +14,7 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Quad;
@@ -33,8 +35,9 @@ public class MainApplication extends SimpleApplication {
     private AnimatedSprite testSprite;
     private Node mapNode;
     private Scene scene;
-
+    
     private HashMap<String, Boolean> keysDown = new HashMap<String, Boolean>();
+    private HashMap<String, Long> keysLastDown = new HashMap<String, Long>();
 
     public static void main(String[] args) {
         //JinputDriverExtractor.extract();
@@ -43,7 +46,7 @@ public class MainApplication extends SimpleApplication {
 
         app.setShowSettings(false);
         AppSettings mySettings = new AppSettings(true);
-        mySettings.setVSync(false);
+        mySettings.setVSync(true);
         mySettings.setSamples(2);
         mySettings.setResolution(1024, 768);
         mySettings.setTitle("Platform");
@@ -77,6 +80,8 @@ public class MainApplication extends SimpleApplication {
         keysDown.put("up", false);
         keysDown.put("down", false);
         keysDown.put("run", false);
+        keysLastDown.put("left", 0l);
+        keysLastDown.put("right", 0l);
 
         inputManager.addMapping("ResetPosition", new KeyTrigger(KeyInput.KEY_SPACE));
         inputManager.addListener(actionListener, "ResetPosition");
@@ -93,8 +98,8 @@ public class MainApplication extends SimpleApplication {
         inputManager.addMapping("MoveDown", new KeyTrigger(KeyInput.KEY_DOWN));
         inputManager.addListener(actionListener, "MoveDown");
 
-        inputManager.addMapping("Run", new KeyTrigger(KeyInput.KEY_LSHIFT));
-        inputManager.addListener(actionListener, "Run");
+        //inputManager.addMapping("Slow", new KeyTrigger(KeyInput.KEY_LSHIFT));
+        //inputManager.addListener(actionListener, "Slow");
 
 
         viewPort.setBackgroundColor(new ColorRGBA(0.3f, 0.5f, 0.8f, 1.0f));
@@ -117,14 +122,17 @@ public class MainApplication extends SimpleApplication {
         guy.setDepiction(cd);
         guy.depiction.addAnchorBox(assetManager);
 
-        BitmapObstacleMap map = new BitmapObstacleMap(assetManager.loadTexture("Textures/map.png").getImage());
+        BitmapObstacleMap map = new BitmapObstacleMap(assetManager.loadTexture("Textures/map-small.png").getImage());
 
         scene.setMap(map);
 
         guy.setStop();
-        guy.setPosition(100, 50);
+        guy.setPosition(10, 15);
 
         scene.addCharacter(guy);
+
+        SceneView view = new SceneView(cam, scene, assetManager);
+        rootNode.attachChild(view.node);
 
         /** /
         Sprite guy2Sprite = new Sprite(assetManager, "Textures/sprites.png", 8, 2, 2);
@@ -146,7 +154,13 @@ public class MainApplication extends SimpleApplication {
         guy2.depiction.addAnchorBox(assetManager);
 
         scene.addCharacter(guy2);*/
-
+        /*
+        System.out.println(cam);
+        System.out.println(cam.getViewMatrix());
+        System.out.println(cam.getViewProjectionMatrix());
+        System.out.println(cam.getViewPortLeft() + " " + cam.getViewPortRight()+ ", " + cam.getViewPortTop()+ " " + cam.getViewPortBottom());
+        System.out.println(cam.getFrustumLeft() + " " + cam.getFrustumRight() + ", " + cam.getFrustumTop()+ " " + cam.getFrustumBottom());
+        */
     }
 
     private void makeScene() {
@@ -154,12 +168,12 @@ public class MainApplication extends SimpleApplication {
 
         Node allNode = scene.getNode(); //new Node("AllNode");
 
-        Quad q = new Quad(200,100);
+        Quad q = new Quad(50,20);
         Geometry g = new Geometry("lalala", q);
         mapNode = new Node("map");
         mapNode.attachChild(g);
 
-        Texture mapTexture = assetManager.loadTexture("Textures/map.png");
+        Texture mapTexture = assetManager.loadTexture("Textures/map-small.png");
         mapTexture.setMagFilter(Texture.MagFilter.Nearest);
 
         /*
@@ -189,13 +203,13 @@ public class MainApplication extends SimpleApplication {
         allNode.attachChild(mapNode);
 
         //allNode.scale(0.05f);
-        float scale = 0.01f;
-        allNode.scale(scale);
-        allNode.setLocalTranslation(-scale * 85 / 1f, -scale * 50/1f, 0);
+        //float scale = 0.02f;
+        //allNode.scale(scale);
+        //allNode.setLocalTranslation(-scale * 25 / 1f, -scale * 10/1f, 0);
 
-        testSprite = new AnimatedSprite(assetManager, "Textures/sprites.png", 8, 10, 10);
-        scene.addSprite(testSprite);
-
+        testSprite = new AnimatedSprite(assetManager, "Textures/sprites.png", 8, 10, 8);
+        //scene.addSprite(testSprite);
+        
         rootNode.attachChild(allNode);
     }
 
@@ -203,16 +217,29 @@ public class MainApplication extends SimpleApplication {
         public void onAction(String name, boolean keyPressed, float tpf) {
             //log.info(name+" "+keyPressed);
             if (name.equals("ResetPosition")) {
-                guy.setPosition(100, 50);
+                guy.setPosition(10, 15);
             }
 
             int direction = 0;
+            long now = System.currentTimeMillis();
 
             if (name.equals("MoveLeft")) {
                 keysDown.put("left", keyPressed);
+                if (keyPressed) {
+                    if (now - keysLastDown.get("left") < 200) {
+                        keysDown.put("run", true);
+                    }
+                    keysLastDown.put("left", now);
+                }
             }
             if (name.equals("MoveRight")) {
                 keysDown.put("right", keyPressed);
+                if (keyPressed) {
+                    if (now - keysLastDown.get("right") < 200) {
+                        keysDown.put("run", true);
+                    }
+                    keysLastDown.put("right", now);
+                }
             }
             if (name.equals("MoveUp")) {
                 keysDown.put("up", keyPressed);
@@ -221,10 +248,6 @@ public class MainApplication extends SimpleApplication {
                 keysDown.put("down", keyPressed);
                 testSprite.loop(30);
             }
-            if (name.equals("Run")) {
-                keysDown.put("run", keyPressed);
-                testSprite.start(30);
-            }
 
             if (keysDown.get("left") && !keysDown.get("right")) {
                 direction = -1;
@@ -232,10 +255,14 @@ public class MainApplication extends SimpleApplication {
             if (!keysDown.get("left") && keysDown.get("right")) {
                 direction = 1;
             }
+            
+            if (direction == 0) {
+                keysDown.put("run", false);
+            }
 
             boolean run = keysDown.get("run");
             boolean jump = keysDown.get("up");
-
+            
             if (direction == 0) {
                 guy.setStop();
                 guy.setJump(jump);
@@ -273,6 +300,18 @@ public class MainApplication extends SimpleApplication {
 
         notifications.update();
 
-        scene.update(tpf);
+        // Compensate for longer frames
+        // If slower than half fps do multiple micro updates
+        
+        final float targetTpf = 0.01667f;
+        if (tpf <= targetTpf * 2) {
+            scene.update(tpf);
+        } else {
+            int frames = (int)(tpf / targetTpf); // more than 2
+            float subTpf = tpf / frames;
+            for (int i = 0; i < frames; i++) {
+                scene.update(subTpf);
+            }
+        }
     }
 }
