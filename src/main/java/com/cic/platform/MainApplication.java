@@ -35,7 +35,7 @@ public class MainApplication extends SimpleApplication {
     private AnimatedSprite testSprite;
     private Node mapNode;
     private Scene scene;
-    
+
     private HashMap<String, Boolean> keysDown = new HashMap<String, Boolean>();
     private HashMap<String, Long> keysLastDown = new HashMap<String, Long>();
 
@@ -131,8 +131,8 @@ public class MainApplication extends SimpleApplication {
 
         scene.addCharacter(guy);
 
-        SceneView view = new SceneView(cam, scene, assetManager);
-        rootNode.attachChild(view.node);
+        SceneView view = new SceneView(cam, scene, 16f/20f, assetManager);
+        rootNode.attachChild(view.getNode());
 
         /** /
         Sprite guy2Sprite = new Sprite(assetManager, "Textures/sprites.png", 8, 2, 2);
@@ -209,7 +209,7 @@ public class MainApplication extends SimpleApplication {
 
         testSprite = new AnimatedSprite(assetManager, "Textures/sprites.png", 8, 10, 8);
         //scene.addSprite(testSprite);
-        
+
         rootNode.attachChild(allNode);
     }
 
@@ -255,14 +255,14 @@ public class MainApplication extends SimpleApplication {
             if (!keysDown.get("left") && keysDown.get("right")) {
                 direction = 1;
             }
-            
+
             if (direction == 0) {
                 keysDown.put("run", false);
             }
 
             boolean run = keysDown.get("run");
             boolean jump = keysDown.get("up");
-            
+
             if (direction == 0) {
                 guy.setStop();
                 guy.setJump(jump);
@@ -302,7 +302,7 @@ public class MainApplication extends SimpleApplication {
 
         // Compensate for longer frames
         // If slower than half fps do multiple micro updates
-        
+
         final float targetTpf = 0.01667f;
         if (tpf <= targetTpf * 2) {
             scene.update(tpf);
