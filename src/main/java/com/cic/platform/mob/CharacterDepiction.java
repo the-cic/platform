@@ -4,7 +4,7 @@
  */
 package com.cic.platform.mob;
 
-import com.cic.platform.CommonMaterials;
+import com.cic.platform.util.CommonMaterials;
 import com.cic.platform.scene.Sprite;
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;

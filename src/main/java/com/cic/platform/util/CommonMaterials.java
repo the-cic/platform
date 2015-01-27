@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.cic.platform;
+package com.cic.platform.util;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;

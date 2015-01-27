@@ -5,7 +5,7 @@
  */
 package com.cic.platform.scene;
 
-import com.cic.platform.CommonMaterials;
+import com.cic.platform.util.CommonMaterials;
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;

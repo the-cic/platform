@@ -5,7 +5,9 @@
  */
 package com.cic.platform.scene;
 
-import com.cic.platform.CommonMaterials;
+import com.cic.platform.util.CommonMaterials;
+import com.jme3.math.Matrix4f;
+import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
@@ -62,9 +64,39 @@ public class SceneView {
         applyScroll();
     }
 
-    public float getSceneViewPercent(float positionInScene){
+    public float getSceneViewPercent(){
+        return sceneViewScrollPercent;
+    }
+
+    /**
+     * Get scroll percent of position in scene
+     * @param positionInScene
+     * @return
+     */
+    public float getPositionSceneViewPercent(float positionInScene){
         float percent = (positionInScene - sceneViewWidth / 2) / (scene.width - sceneViewWidth);
         return percent < 0 ? 0 : (percent > 1 ? 1 : percent);
+    }
+
+    /**
+     * Get percent within frame of position in scene
+     *
+     * @param positionInScene
+     * @return
+     */
+    public float getFramePercent(float positionInScene){
+        Matrix4f wmx = scene.getNode().getLocalToWorldMatrix(null);
+        Vector3f pv = new Vector3f(positionInScene, 0, 0);
+        Vector3f wpv = wmx.mult(pv);
+        Matrix4f lmx = frame.getLocalToWorldMatrix(null).invert();
+        Vector3f lpv = lmx.mult(wpv);
+        //System.out.println("");
+        //System.out.println(pv);
+        //System.out.println(wpv);
+        //System.out.println(lpv);
+        float perc = lpv.x + 0.5f;
+
+        return perc < 0 ? 0 : (perc > 1 ? 1 : perc);
     }
 
     private void makeFrame(){
@@ -85,7 +117,7 @@ public class SceneView {
 
         // scale to fit frame into frustrum
         frameFitScale = Math.min(frustrumWidth / frameWidth, frustrumHeight / frameHeight);
-        frame.setLocalScale(0.99f * frameFitScale);
+        frame.setLocalScale(1f * frameFitScale);
 
         applyScale();
     }

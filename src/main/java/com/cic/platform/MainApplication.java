@@ -1,5 +1,6 @@
 package com.cic.platform;
 
+import com.cic.platform.util.CommonMaterials;
 import com.cic.platform.scene.Scene;
 import com.cic.platform.map.BitmapObstacleMap;
 import com.cic.platform.scene.AnimatedSprite;
@@ -8,6 +9,7 @@ import com.cic.platform.mob.CharacterDepiction;
 import com.cic.platform.mob.FrameSequences;
 import com.cic.platform.scene.SceneView;
 import com.cic.platform.scene.Sprite;
+import com.cic.platform.util.Transition;
 import com.jme3.app.SimpleApplication;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
@@ -36,6 +38,7 @@ public class MainApplication extends SimpleApplication {
     private Node mapNode;
     private Scene scene;
     private SceneView sceneView;
+    private Transition viewTransition = null;
 
     private HashMap<String, Boolean> keysDown = new HashMap<String, Boolean>();
     private HashMap<String, Long> keysLastDown = new HashMap<String, Long>();
@@ -134,7 +137,8 @@ public class MainApplication extends SimpleApplication {
 
         scene.addCharacter(guy);
 
-        sceneView = new SceneView(cam, scene, 16f/9f);
+        sceneView = new SceneView(cam, scene, 16f/19f);
+        sceneView.setSceneViewWidth(30);
         rootNode.attachChild(sceneView.getNode());
 
         /** /
@@ -311,7 +315,17 @@ public class MainApplication extends SimpleApplication {
             }
         }
 
-        float guyPercent = sceneView.getSceneViewPercent(guy.xPos);
-        sceneView.setSceneViewPercent(guyPercent);
+        float guyPercent = sceneView.getPositionSceneViewPercent(guy.xPos);
+
+        float framePerc = sceneView.getFramePercent(guy.xPos);
+        if (framePerc < 0.2 || framePerc > 0.8) {
+            if (viewTransition == null || viewTransition.isFinished()) {
+                viewTransition = new Transition(sceneView.getSceneViewPercent(), guyPercent, 5f, 0.1f, 0.8f);
+            }
+        }
+        if (viewTransition != null && !viewTransition.isFinished()) {
+            viewTransition.update(tpf);
+            sceneView.setSceneViewPercent(viewTransition.getValue());
+        }
     }
 }
