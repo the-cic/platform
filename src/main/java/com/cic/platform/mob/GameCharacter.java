@@ -17,7 +17,7 @@ public class GameCharacter extends MovableObject {
 
     public float walkSpeed = 5;
     public float runSpeed = 10;
-    public float jumpSpeed = 10;
+    public float jumpSpeed = 15;
 
     // intentionally
     private boolean walking = false;
@@ -46,9 +46,14 @@ public class GameCharacter extends MovableObject {
     }
 
     public void update(ObstacleMap obstacleMap, float tpf){
+        nextXPos = xPos + xSpeed * tpf;
+        nextYPos = isFalling ? yPos + ySpeed * tpf : yPos;
 
         // ObstacleMap.move will set/unset isFalling and call onStartFalling or onStopFalling
-        obstacleMap.move(this, tpf);
+        obstacleMap.checkMove(this);
+
+        xPos = nextXPos;
+        yPos = nextYPos;
 
         if (isFalling) {
             freeFall(tpf);
@@ -80,39 +85,6 @@ public class GameCharacter extends MovableObject {
         depiction.startNextSequence();
         // do something with speed if needed
     }
-
-    /*
-    public void update(ObstacleMap obstacleMap, float tpf){
-
-        Obstacle collidedWith = obstacleMap.move(this, tpf);
-
-        if (isFalling) {
-            if (collidedWith == null) {
-                freeFall(tpf);
-            } else {
-                doLand();
-                if (walking) {
-                    if (running) {
-                        startRunning();
-                    } else {
-                        startWalking();
-                    }
-                } else {
-                    doStop();
-                }
-                if (jumping) {
-                    doJump();
-                }
-                depiction.setNextSequence();
-            }
-        } else {
-            if (collidedWith != null) {
-            }
-        }
-
-        depiction.update(tpf);
-    }
-    */
 
     public void setStop(){
         walking = false;
@@ -190,13 +162,6 @@ public class GameCharacter extends MovableObject {
             }
         }*/
     }
-
-    /*
-    private void doLand(){
-        //ySpeed = 0;
-        isFalling = false;
-    }
-    */
 
     /*public void onFrameSequenceChanged(String fullSeqName){
         //System.out.println(fullSeqName);

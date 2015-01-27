@@ -16,11 +16,10 @@ import com.cic.platform.map.obstacle.Obstacle;
  */
 public abstract class ObstacleMap {
 
-    public Obstacle move(MovableObject mob, float tpf){
-        float nextXPos = mob.xPos + mob.xSpeed * tpf;
-        float nextYPos = mob.yPos + mob.ySpeed * tpf;
-
-        Obstacle collision = collisionCheck(mob.xPos, mob.yPos, nextXPos, nextYPos, mob);
+    // this is completely useless
+    
+    public Obstacle checkMove(MovableObject mob/*, float tpf*/){
+        Obstacle collision = collisionCheck(mob.xPos, mob.yPos, mob.nextXPos, mob.nextYPos, mob);
 
         if (collision != null) {
             switch (collision.type) {
@@ -35,16 +34,14 @@ public abstract class ObstacleMap {
                     mob.xSpeed = 0;
             }
         } else {
-            mob.xPos = nextXPos;
-            mob.yPos = nextYPos;
         }
 
         return collision;
     }
-    
-    
-    
-    
+
+
+
+
 
     public abstract float getWidth();
     public abstract float getHeight();
