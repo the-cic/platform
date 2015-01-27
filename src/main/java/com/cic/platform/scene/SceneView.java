@@ -58,8 +58,13 @@ public class SceneView {
     }
 
     public void setSceneViewPercent(float p){
-        this.sceneViewScrollPercent = p;
+        this.sceneViewScrollPercent = p < 0 ? 0 : (p > 1 ? 1 : p);
         applyScroll();
+    }
+
+    public float getSceneViewPercent(float positionInScene){
+        float percent = (positionInScene - sceneViewWidth / 2) / (scene.width - sceneViewWidth);
+        return percent < 0 ? 0 : (percent > 1 ? 1 : percent);
     }
 
     private void makeFrame(){

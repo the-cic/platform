@@ -35,6 +35,7 @@ public class MainApplication extends SimpleApplication {
     //private AnimatedSprite testSprite;
     private Node mapNode;
     private Scene scene;
+    private SceneView sceneView;
 
     private HashMap<String, Boolean> keysDown = new HashMap<String, Boolean>();
     private HashMap<String, Long> keysLastDown = new HashMap<String, Long>();
@@ -133,8 +134,8 @@ public class MainApplication extends SimpleApplication {
 
         scene.addCharacter(guy);
 
-        SceneView view = new SceneView(cam, scene, 16f/20f);
-        rootNode.attachChild(view.getNode());
+        sceneView = new SceneView(cam, scene, 16f/9f);
+        rootNode.attachChild(sceneView.getNode());
 
         /** /
         Sprite guy2Sprite = new Sprite(assetManager, "Textures/sprites.png", 8, 2, 2);
@@ -309,5 +310,8 @@ public class MainApplication extends SimpleApplication {
                 scene.update(subTpf);
             }
         }
+
+        float guyPercent = sceneView.getSceneViewPercent(guy.xPos);
+        sceneView.setSceneViewPercent(guyPercent);
     }
 }
