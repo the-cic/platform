@@ -4,12 +4,11 @@
  */
 package com.cic.platform.mob;
 
+import com.cic.platform.CommonMaterials;
 import com.cic.platform.scene.Sprite;
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
-import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Quad;
@@ -42,12 +41,7 @@ public class CharacterDepiction {
     public void addAnchorBox(AssetManager assetManager){
         this.anchorBox = new Node("Anchor");
 
-        Material boxMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        ColorRGBA col = ColorRGBA.Green.clone();
-        col.a = 0.75f;
-        boxMat.setColor("Color", col);
-        boxMat.setColor("GlowColor", col);
-        boxMat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+        Material boxMat = new CommonMaterials.SolidTransparentMaterial(ColorRGBA.Green, 0.75f);
 
         Quad quad = new Quad(1, 0.2f);
         Geometry geom = new Geometry("Geom", quad);
@@ -61,12 +55,7 @@ public class CharacterDepiction {
         geom.setMaterial(boxMat);
         this.anchorBox.attachChild(geom);
 
-        boxMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        col = ColorRGBA.Blue.clone();
-        col.a = 0.75f;
-        boxMat.setColor("Color", col);
-        boxMat.setColor("GlowColor", col);
-        boxMat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+        boxMat = new CommonMaterials.SolidTransparentMaterial(ColorRGBA.Blue, 0.75f);
 
         quad = new Quad(character.boxWidth, character.boxHeight);
         geom = new Geometry("Geom", quad);

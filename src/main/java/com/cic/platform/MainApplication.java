@@ -32,7 +32,7 @@ public class MainApplication extends SimpleApplication {
 
     private GameCharacter guy;
     private Sprite guySprite;
-    private AnimatedSprite testSprite;
+    //private AnimatedSprite testSprite;
     private Node mapNode;
     private Scene scene;
 
@@ -67,6 +67,8 @@ public class MainApplication extends SimpleApplication {
         /* Setup camera */
         flyCam.setEnabled(false);
         cam.setParallelProjection(true);
+
+        CommonMaterials.create(assetManager);
 
         notifications = new NotificationsPanel(assetManager);
         notifications.getNode().setLocalTranslation(0, cam.getHeight(), 0);
@@ -131,7 +133,7 @@ public class MainApplication extends SimpleApplication {
 
         scene.addCharacter(guy);
 
-        SceneView view = new SceneView(cam, scene, 16f/20f, assetManager);
+        SceneView view = new SceneView(cam, scene, 16f/20f);
         rootNode.attachChild(view.getNode());
 
         /** /
@@ -166,7 +168,7 @@ public class MainApplication extends SimpleApplication {
     private void makeScene() {
         scene = new Scene();
 
-        Node allNode = scene.getNode(); //new Node("AllNode");
+        Node allNode = scene.getNode();
 
         Quad q = new Quad(50,20);
         Geometry g = new Geometry("lalala", q);
@@ -197,17 +199,11 @@ public class MainApplication extends SimpleApplication {
         mapMat.setTexture("ColorMap", mapTexture);
 
         mapNode.setMaterial(mapMat);
-        //mapNode.scale(1/5f);
         mapNode.setLocalTranslation(0, 0, -1f);
 
         allNode.attachChild(mapNode);
 
-        //allNode.scale(0.05f);
-        //float scale = 0.02f;
-        //allNode.scale(scale);
-        //allNode.setLocalTranslation(-scale * 25 / 1f, -scale * 10/1f, 0);
-
-        testSprite = new AnimatedSprite(assetManager, "Textures/sprites.png", 8, 10, 8);
+        //testSprite = new AnimatedSprite(assetManager, "Textures/sprites.png", 8, 10, 8);
         //scene.addSprite(testSprite);
 
         rootNode.attachChild(allNode);
@@ -246,7 +242,7 @@ public class MainApplication extends SimpleApplication {
             }
             if (name.equals("MoveDown")) {
                 keysDown.put("down", keyPressed);
-                testSprite.loop(30);
+                //testSprite.loop(30);
             }
 
             if (keysDown.get("left") && !keysDown.get("right")) {

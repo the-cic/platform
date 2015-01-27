@@ -5,9 +5,7 @@
  */
 package com.cic.platform.scene;
 
-import com.jme3.asset.AssetManager;
-import com.jme3.material.Material;
-import com.jme3.math.ColorRGBA;
+import com.cic.platform.CommonMaterials;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
@@ -34,24 +32,13 @@ public class SceneView {
     private Camera cam;
     private Scene scene;
 
-    public SceneView(Camera cam, Scene scene, float aspect, AssetManager assetManager){
+    public SceneView(Camera cam, Scene scene, float aspect){
         this.cam = cam;
         this.scene = scene;
         frameWidth = 1;
         frameHeight = 1 / aspect;
 
-        Material frMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        frMat.setColor("Color", ColorRGBA.Green.clone());
-
-        frame = new Node("frame");
-        Quad frameShape = new Quad(frameWidth, frameHeight);
-        Geometry geom = new Geometry("frameGeom", frameShape);
-        geom.setMaterial(frMat);
-        geom.setLocalTranslation(-frameWidth / 2, -frameHeight / 2, -10);
-        frame.attachChild(geom);
-
-        node = new Node("SceneView");
-        node.attachChild(frame);
+        makeFrame();
 
         applyFrame();
     }
@@ -75,13 +62,25 @@ public class SceneView {
         applyScroll();
     }
 
+    private void makeFrame(){
+        frame = new Node("frame");
+        Quad frameShape = new Quad(frameWidth, frameHeight);
+        Geometry geom = new Geometry("frameGeom", frameShape);
+        geom.setMaterial(CommonMaterials.solidGreen);
+        geom.setLocalTranslation(-frameWidth / 2, -frameHeight / 2, -10);
+        frame.attachChild(geom);
+
+        node = new Node("SceneView");
+        node.attachChild(frame);
+    }
+
     private void applyFrame(){
         float frustrumWidth = cam.getFrustumRight() - cam.getFrustumLeft();
         float frustrumHeight = cam.getFrustumTop() - cam.getFrustumBottom();
 
         // scale to fit frame into frustrum
         frameFitScale = Math.min(frustrumWidth / frameWidth, frustrumHeight / frameHeight);
-        frame.setLocalScale(frameFitScale);
+        frame.setLocalScale(0.99f * frameFitScale);
 
         applyScale();
     }
