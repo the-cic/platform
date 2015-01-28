@@ -19,8 +19,8 @@ public class BitmapObstacleMap extends ObstacleMap {
 
     private int bitmapWidth, bitmapHeight;
     private byte[][] blocks;
-    private float blockWidth = 0.8f;
-    private float blockHeight = 0.8f;
+    private float blockWidth = 1.0f;
+    private float blockHeight = 1.0f;
 
     public BitmapObstacleMap(Image textureImage) {
         Image.Format format = textureImage.getFormat();

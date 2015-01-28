@@ -16,6 +16,12 @@ public class FrameSequences {
         }
     };
 
+    public static final FrameSequence crouch = new FrameSequence() {
+        {
+            addFrame(7, true, 0.1f);
+        }
+    };
+
     public static final FrameSequence walkLeft = new FrameSequence() {
         {
             addFrame(1, true, 0.2f);
@@ -37,7 +43,7 @@ public class FrameSequences {
             //addFrame(4, true, 0.2f);
         }
     };
-    
+
     public static final FrameSequence runRight = new FrameSequence() {
         {
             addFrame(3, true, 0.1f);

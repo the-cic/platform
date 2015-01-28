@@ -80,6 +80,7 @@ public class MainApplication extends SimpleApplication {
         keysDown.put("up", false);
         keysDown.put("down", false);
         keysDown.put("run", false);
+        keysDown.put("slow", false);
         keysLastDown.put("left", 0l);
         keysLastDown.put("right", 0l);
 
@@ -98,8 +99,8 @@ public class MainApplication extends SimpleApplication {
         inputManager.addMapping("MoveDown", new KeyTrigger(KeyInput.KEY_DOWN));
         inputManager.addListener(actionListener, "MoveDown");
 
-        //inputManager.addMapping("Slow", new KeyTrigger(KeyInput.KEY_LSHIFT));
-        //inputManager.addListener(actionListener, "Slow");
+        inputManager.addMapping("Slow", new KeyTrigger(KeyInput.KEY_LSHIFT));
+        inputManager.addListener(actionListener, "Slow");
 
 
         viewPort.setBackgroundColor(new ColorRGBA(0.3f, 0.5f, 0.8f, 1.0f));
@@ -117,6 +118,9 @@ public class MainApplication extends SimpleApplication {
         cd.addFrameSequence("run:R", FrameSequences.runRight);
         cd.addFrameSequence("jump:L", FrameSequences.jumpRight);
         cd.addFrameSequence("jump:R", FrameSequences.jumpRight);
+        cd.addFrameSequence("crouch:", FrameSequences.crouch);
+        cd.addFrameSequence("crouch:L", FrameSequences.crouch);
+        cd.addFrameSequence("crouch:R", FrameSequences.crouch);
 
         guy = new GameCharacter(0.9f, 1.8f);
         guy.setDepiction(cd);
@@ -239,6 +243,10 @@ public class MainApplication extends SimpleApplication {
                 keysDown.put("down", keyPressed);
                 //testSprite.loop(30);
             }
+            if (name.equals("Slow")) {
+                keysDown.put("slow", keyPressed);
+                keysDown.put("run", false);
+            }
 
             if (keysDown.get("left") && !keysDown.get("right")) {
                 direction = -1;
@@ -251,12 +259,15 @@ public class MainApplication extends SimpleApplication {
                 keysDown.put("run", false);
             }
 
-            boolean run = keysDown.get("run");
+            boolean run = keysDown.get("run") && !keysDown.get("slow");
+            boolean slow = keysDown.get("slow");
             boolean jump = keysDown.get("up");
+            boolean crouch = keysDown.get("down");
 
             if (direction == 0) {
                 guy.setStop();
                 guy.setJump(jump);
+                guy.setCrouch(crouch);
             } else {
                 if (direction > 0) {
                     guy.setLookRight();
@@ -265,10 +276,14 @@ public class MainApplication extends SimpleApplication {
                 }
                 if (run) {
                     guy.setRun();
-                } else {
+                } else
+                if (slow) {
+                    guy.setSneak();
+                }else {
                     guy.setWalk();
                 }
                 guy.setJump(jump);
+                guy.setCrouch(crouch);
             }
         }
     };

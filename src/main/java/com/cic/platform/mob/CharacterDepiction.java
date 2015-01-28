@@ -29,6 +29,7 @@ public class CharacterDepiction {
     public GameCharacter character = null;
     public Sprite sprite;
     public Node anchorBox = null;
+    private Node boundBox = null;
     public float spriteXOfs;
     public float spriteYOfs;
 
@@ -57,11 +58,21 @@ public class CharacterDepiction {
 
         boxMat = new CommonMaterials.SolidTransparentMaterial(ColorRGBA.Blue, 0.75f);
 
-        quad = new Quad(character.boxWidth, character.boxHeight);
+        quad = new Quad(1, 1);
         geom = new Geometry("Geom", quad);
-        geom.setLocalTranslation(-character.boxWidth/2, 0, 0);
         geom.setMaterial(boxMat);
-        this.anchorBox.attachChild(geom);
+        this.boundBox = new Node("Bound box");
+        this.boundBox.attachChild(geom);
+        updateBoundBox();
+
+        this.anchorBox.attachChild(boundBox);
+    }
+
+    public void updateBoundBox(){
+        if (boundBox != null) {
+            boundBox.setLocalScale(character.boxWidth, character.boxHeight, 1);
+            boundBox.setLocalTranslation(-character.boxWidth/2, 0, 0);
+        }
     }
 
     public void addFrameSequence(String key, FrameSequence seq){
