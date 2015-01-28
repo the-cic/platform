@@ -112,8 +112,10 @@ public class MainApplication extends SimpleApplication {
         cd.addFrameSequence("stop:", FrameSequences.stand);
         cd.addFrameSequence("stop:L", FrameSequences.stand);
         cd.addFrameSequence("stop:R", FrameSequences.stand);
-        cd.addFrameSequence("walk:L", FrameSequences.walkRight);
-        cd.addFrameSequence("walk:R", FrameSequences.walkRight);
+        cd.addFrameSequence("walk:L", FrameSequences.walkLeft);
+        cd.addFrameSequence("walk:R", FrameSequences.walkLeft);
+        cd.addFrameSequence("sneak:L", FrameSequences.sneakLeft);
+        cd.addFrameSequence("sneak:R", FrameSequences.sneakLeft);
         cd.addFrameSequence("run:L", FrameSequences.runRight);
         cd.addFrameSequence("run:R", FrameSequences.runRight);
         cd.addFrameSequence("jump:L", FrameSequences.jumpRight);
@@ -210,7 +212,6 @@ public class MainApplication extends SimpleApplication {
 
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean keyPressed, float tpf) {
-            //log.info(name+" "+keyPressed);
             if (name.equals("ResetPosition")) {
                 resetGuyPosition();
             }
@@ -241,17 +242,16 @@ public class MainApplication extends SimpleApplication {
             }
             if (name.equals("MoveDown")) {
                 keysDown.put("down", keyPressed);
-                //testSprite.loop(30);
             }
             if (name.equals("Slow")) {
                 keysDown.put("slow", keyPressed);
                 keysDown.put("run", false);
             }
 
+            // exclude both left and right
             if (keysDown.get("left") && !keysDown.get("right")) {
                 direction = -1;
-            } else
-            if (!keysDown.get("left") && keysDown.get("right")) {
+            } else if (!keysDown.get("left") && keysDown.get("right")) {
                 direction = 1;
             }
 
@@ -276,10 +276,9 @@ public class MainApplication extends SimpleApplication {
                 }
                 if (run) {
                     guy.setRun();
-                } else
-                if (slow) {
+                } else if (slow) {
                     guy.setSneak();
-                }else {
+                } else {
                     guy.setWalk();
                 }
                 guy.setJump(jump);
@@ -291,18 +290,15 @@ public class MainApplication extends SimpleApplication {
     @Override
     public void simpleUpdate(float tpf) {
         if (guy != null) {
-            notifications.put("a", "i:" + guy.depiction.getFrameSequence().frameIndex);
-            notifications.put("b", "d:" + guy.depiction.getFrameSequence().frameDuration);
-            notifications.put("c", "int:" + guy.depiction.getFrameSequence().canBeInterrupted);
+            notifications.put("a", "sq   :" + guy.depiction.currentSequenceKey);
+            notifications.put("b", "f.i  :" + guy.depiction.getFrameSequence().frameIndex);
+            notifications.put("c", "f.d  :" + guy.depiction.getFrameSequence().frameDuration);
+            notifications.put("d", "f.int:" + guy.depiction.getFrameSequence().canBeInterrupted);
 
-            notifications.put("g0", "sqc:" + guy.depiction.currentSequenceKey);
-            notifications.put("g1", "sqn:" + guy.depiction.nextSequenceKey);
-
-            //notifications.put("h1", "st:" + guy.walking);
-            notifications.put("h2", "di:" + guy.direction);
+            notifications.put("h2", "g.d :" + guy.direction);
         }
 
-        notifications.put("p", "" + keysDown.toString());
+        notifications.put("p", "keys: " + keysDown.toString());
 
         notifications.update();
 
@@ -320,6 +316,8 @@ public class MainApplication extends SimpleApplication {
             }
         }
 
+        // Follow player's position and move sceneView
+        
         float guyPercent = sceneView.getPositionSceneViewPercent(guy.xPos);
 
         float framePerc = sceneView.getFramePercent(guy.xPos);

@@ -17,6 +17,7 @@ public abstract class FrameSequence {
     private int maxSequenceIndex = -1;
     private float time = 0;
     private int nextSequenceIndex;
+    private boolean looped = false;
 
     public int frameIndex;
     public boolean canBeInterrupted;
@@ -55,12 +56,18 @@ public abstract class FrameSequence {
 
     private void advanceFrame(){
         sequenceIndex = nextSequenceIndex;
+        looped = false;
         if (sequenceIndex > maxSequenceIndex) {
             sequenceIndex = 0;
+            looped = true;
         }
         frameIndex = frameIndexList.get(sequenceIndex);
         canBeInterrupted = frameInterruptableList.get(sequenceIndex);
         frameDuration = frameDurationList.get(sequenceIndex);
         nextSequenceIndex = frameNextSequenceIndexList.get(sequenceIndex);
+    }
+    
+    public boolean hasLooped(){
+        return looped;
     }
 }

@@ -24,8 +24,17 @@ public class FrameSequences {
 
     public static final FrameSequence walkLeft = new FrameSequence() {
         {
+            addFrame(1, true, 0.1f);
+            addFrame(2, true, 0.1f);
+            //addFrame(7, true, 0.2f);
+            //addFrame(8, true, 0.2f);
+        }
+    };
+    
+    public static final FrameSequence sneakLeft = new FrameSequence() {
+        {
             addFrame(1, true, 0.2f);
-            addFrame(2, true, 0.3f);
+            addFrame(2, true, 0.2f);
             //addFrame(7, true, 0.2f);
             //addFrame(8, true, 0.2f);
         }
@@ -46,10 +55,10 @@ public class FrameSequences {
 
     public static final FrameSequence runRight = new FrameSequence() {
         {
-            addFrame(3, true, 0.1f);
-            addFrame(1, true, 0.1f);
-            addFrame(4, true, 0.1f);
-            addFrame(2, true, 0.1f);
+            addFrame(3, true, 0.03f);
+            addFrame(1, true, 0.05f);
+            addFrame(4, true, 0.03f);
+            addFrame(2, true, 0.05f);
             //addFrame(3, true, 0.2f);
             //addFrame(4, true, 0.2f);
         }

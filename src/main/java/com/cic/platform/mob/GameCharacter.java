@@ -17,7 +17,7 @@ public class GameCharacter extends MovableObject {
 
     public float walkSpeed = 5;
     public float runSpeed = 10;
-    public float sneakSpeed = 2;
+    public float sneakSpeed = 1;
     public float jumpSpeed = 15;
 
     private float normalBoxHeight;
@@ -29,6 +29,7 @@ public class GameCharacter extends MovableObject {
     private boolean jumping = false;
     private boolean sneaking = false;
     private boolean crouching = false;
+    private boolean mustJump = false;
 
     public CharacterDepiction depiction;
 
@@ -42,6 +43,7 @@ public class GameCharacter extends MovableObject {
     public void setDepiction(CharacterDepiction depiction){
         this.depiction = depiction;
         this.depiction.character = this;
+        this.depiction.startSequence(this.getSequenceFromState());
     }
 
     public Sprite getSprite(){
@@ -83,114 +85,93 @@ public class GameCharacter extends MovableObject {
         walking = false;
         running = false;
         sneaking = false;
-        if (!isFalling) {
-            doStop();
-        }
     }
 
     public void setWalk(){
         walking = true;
         running = false;
         sneaking = false;
-        if (!isFalling) {
-            startWalking();
-        }
     }
 
     public void setRun(){
         walking = true;
         running = true;
         sneaking = false;
-        if (!isFalling) {
-            startRunning();
-        }
     }
 
     public void setSneak(){
         walking = true;
         running = false;
         sneaking = true;
-        if (!isFalling) {
-            startSneaking();
-        }
     }
 
     public void setJump(boolean isJumping){
         jumping = isJumping;
         if (jumping) {
-            boolean wasCrouching = crouching;
             crouching = false;
-            if (wasCrouching) {
-                doStandUp();
-            }
-        }
-        if (jumping && !isFalling) {
-            doJump();
+            mustJump = true;
         }
     }
 
     public void setCrouch(boolean isCrouching){
-        boolean wasCrouching = crouching;
-        if (!isFalling) {
-            crouching = isCrouching;
-            if (crouching != wasCrouching) {
+        crouching = isCrouching;
+    }
+    
+    public String getSequenceFromState(){
+        if (isFalling) {
+            // no control while falling
+            return "jump:"+(direction > 0 ? "R" : "L");
+        }
+        
+        xSpeed = 0;
+        String seq = crouching 
+                ? "crouch:"+(direction > 0 ? "R" : "L")
+                : "stop:"+(direction == 0 ? "" : ( direction > 0 ? "R" : "L"));
+        
+        if (crouching && !jumping) {
+            boxHeight = crouchedBoxHeight;
+            depiction.updateBoundBox();
+        } else {
+            boxHeight = normalBoxHeight;
+            depiction.updateBoundBox();
+        }
+        
+        if (walking) {
+            if (running) {
                 if (crouching) {
-                    doCrouch();
+                    seq = "crouch:"+(direction > 0 ? "R" : "L");
+                    xSpeed = runSpeed * direction * 0.75f;
                 } else {
-                    doStandUp();
+                    seq = "run:"+(direction > 0 ? "R" : "L");
+                    xSpeed = runSpeed * direction;
+                }
+            } else
+            if (sneaking) {
+                if (crouching) {
+                    xSpeed = sneakSpeed * direction * 0.75f;
+                    seq = "crouch:"+(direction > 0 ? "R" : "L");
+                } else {
+                    xSpeed = sneakSpeed * direction;
+                    seq = "sneak:"+(direction > 0 ? "R" : "L");
+                }
+            } else {
+                if (crouching) {
+                    xSpeed = walkSpeed * direction * 0.75f;
+                    seq = "crouch:"+(direction > 0 ? "R" : "L");
+                } else {
+                    xSpeed = walkSpeed * direction;
+                    seq = "walk:"+(direction > 0 ? "R" : "L");
                 }
             }
         } else {
-            crouching = false;
-            if (wasCrouching) {
-                doStandUp();
-            }
         }
-    }
-
-    // should collect a logic for setting next sequence, possibly on every sequence finish
-
-    private void doStop(){
-        depiction.setNextSequence("stop:"+(direction == 0 ? "" : ( direction > 0 ? "R" : "L")));
-        xSpeed = 0;
-    }
-
-    private void startWalking(){
-        depiction.setNextSequence("walk:"+(direction > 0 ? "R" : "L"));
-        xSpeed = walkSpeed * direction;
-    }
-
-    private void startRunning(){
-        depiction.setNextSequence("run:"+(direction > 0 ? "R" : "L"));
-        xSpeed = runSpeed * direction;
-    }
-
-    private void startSneaking(){
-        depiction.setNextSequence("walk:"+(direction > 0 ? "R" : "L"));
-        xSpeed = sneakSpeed * direction;
-    }
-
-    private void doJump() {
-        /*if (crouching) {
-            doStandUp();
-        }*/
-        depiction.setNextSequence("jump:"+(direction > 0 ? "R" : "L"));
-        ySpeed = jumpSpeed;
-        isFalling = true;
-    }
-
-    private void doCrouch(){
-        System.out.println("crouch");
-        depiction.setNextSequence("crouch:"+(direction > 0 ? "R" : "L"));
-        boxHeight = crouchedBoxHeight;
-        depiction.updateBoundBox();
-    }
-
-    private void doStandUp(){
-        System.out.println("stand up");
-        depiction.setNextSequence("stop:"+(direction == 0 ? "" : ( direction > 0 ? "R" : "L")));
-        boxHeight = normalBoxHeight;
-        depiction.updateBoundBox();
+        if (mustJump) {
+            ySpeed = jumpSpeed;
+            isFalling = true;
+            mustJump = false;
+            seq = "jump:"+(direction > 0 ? "R" : "L");
+        }
+        return seq;
     }
 
     private void freeFall(float tpf){
@@ -203,68 +184,21 @@ public class GameCharacter extends MovableObject {
     }
 
     public void onFallApex(){
-        /*if (xSpeed == 0) {
+        if (xSpeed == 0) {
             if (walking) {
-                xSpeed = walkSpeed * direction;
+                xSpeed = walkSpeed * direction * 0.1f;
             }
-        }*/
+        }
     }
 
     @Override
     public void onStartFalling(){
-        depiction.setNextSequence("jump:"+(direction > 0 ? "R" : "L"));
+        depiction.startSequence("jump:"+(direction > 0 ? "R" : "L"));
     }
 
     @Override
     public void onStopFalling(float impactSpeed){
-        if (walking) {
-            if (running) {
-                startRunning();
-            } else
-            if (sneaking) {
-                startSneaking();
-            } else {
-                startWalking();
-            }
-        } else {
-            doStop();
-        }
-        if (jumping) {
-            doJump();
-        }
-        if (crouching) {
-            doCrouch();
-        }
-        depiction.startNextSequence();
+        depiction.startSequence(this.getSequenceFromState());
         // do something with speed if needed
     }
-
-
-    /*public void onFrameSequenceChanged(String fullSeqName){
-        //System.out.println(fullSeqName);
-        String[] parts = fullSeqName.split(":");
-        String seqName = parts[0];
-        if (parts.length > 1) {
-            if ("L".equals(parts[1])) {
-                direction = -1;
-            } else
-            if ("R".equals(parts[1])) {
-                direction = 1;
-            } else {
-                direction = 0;
-            }
-        }
-        if ("walk".equals(seqName)) {
-            doWalk();
-        } else
-        if ("run".equals(seqName)) {
-            doRun();
-        } else
-        if ("stop".equals(seqName)) {
-            doStop();
-        }
-        if ("jump".equals(seqName)) {
-            doJump();
-        }
-    }*/
 }

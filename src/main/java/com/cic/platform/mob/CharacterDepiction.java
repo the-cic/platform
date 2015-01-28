@@ -24,7 +24,6 @@ public class CharacterDepiction {
     public HashMap<String, FrameSequence> sequences = new HashMap<String, FrameSequence>();
     public FrameSequence frameSequence = null;
     public String currentSequenceKey = null;
-    public String nextSequenceKey = null;
 
     public GameCharacter character = null;
     public Sprite sprite;
@@ -81,38 +80,17 @@ public class CharacterDepiction {
 
     public void startSequence(String key){
         currentSequenceKey = key;
-        nextSequenceKey = null;
         frameSequence = sequences.get(currentSequenceKey);
         frameSequence.start();
     }
 
-    public void setNextSequence(String key){
-        //if (!key.equals(currentSequenceKey)) {
-            nextSequenceKey = key;
-            if (currentSequenceKey == null) {
-                startNextSequence();
-            }
-        //}
-    }
-
-    public void startNextSequence(){
-        if (nextSequenceKey == null) {
-            return;
-        }
-        if (sequences.containsKey(nextSequenceKey)) {
-            currentSequenceKey = nextSequenceKey;
-            frameSequence = sequences.get(currentSequenceKey);
-            frameSequence.start();
-            nextSequenceKey = null;
-            // notify character
-            //character.onFrameSequenceChanged(currentSequenceKey);
-        }
-    }
-
     public void update(float tpf){
         boolean advancedFrame = frameSequence.advance(tpf);
-        if (nextSequenceKey != null && frameSequence.canBeInterrupted) {
-            startNextSequence();
+        if (frameSequence.hasLooped()) {
+            String newSequence = character.getSequenceFromState();
+            if (!currentSequenceKey.equals(newSequence)) {
+                startSequence(newSequence);
+            }
         }
         sprite.setFrame(frameSequence.frameIndex);
         sprite.setLocalTranslation(character.xPos + spriteXOfs, character.yPos + spriteYOfs, 0);
