@@ -7,7 +7,11 @@ package com.cic.platform.scene;
 
 import com.cic.platform.map.ObstacleMap;
 import com.cic.platform.mob.GameCharacter;
+import com.jme3.material.Material;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
+import com.jme3.scene.shape.Quad;
+import com.jme3.texture.Texture;
 import java.util.HashMap;
 
 /**
@@ -89,6 +93,18 @@ public class Scene {
             spriteLayer.attachChild(character.depiction.anchorBox);
         }
         return id;
+    }
+
+    public void makeBackgroundPlate(Material mat){
+        Quad q = new Quad(width, height);
+        Geometry g = new Geometry("geom", q);
+        Node plateNode = new Node("BGPlate");
+        plateNode.attachChild(g);
+
+        plateNode.setMaterial(mat);
+        plateNode.setLocalTranslation(0, 0, -1f);
+
+        backgroundLayer.attachChild(plateNode);
     }
 
     public void update(float tpf) {

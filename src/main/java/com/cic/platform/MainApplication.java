@@ -3,7 +3,6 @@ package com.cic.platform;
 import com.cic.platform.util.CommonMaterials;
 import com.cic.platform.scene.Scene;
 import com.cic.platform.map.BitmapObstacleMap;
-import com.cic.platform.scene.AnimatedSprite;
 import com.cic.platform.mob.GameCharacter;
 import com.cic.platform.mob.CharacterDepiction;
 import com.cic.platform.mob.FrameSequences;
@@ -16,11 +15,7 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
-import com.jme3.scene.shape.Quad;
-import com.jme3.shader.VarType;
 import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
 import java.util.HashMap;
@@ -35,7 +30,6 @@ public class MainApplication extends SimpleApplication {
     private GameCharacter guy;
     private Sprite guySprite;
     //private AnimatedSprite testSprite;
-    private Node mapNode;
     private Scene scene;
     private SceneView sceneView;
     private Transition viewTransition = null;
@@ -128,12 +122,8 @@ public class MainApplication extends SimpleApplication {
         guy.setDepiction(cd);
         guy.depiction.addAnchorBox(assetManager);
 
-        BitmapObstacleMap map = new BitmapObstacleMap(assetManager.loadTexture("Textures/map-small.png").getImage());
-
-        scene.setMap(map);
-
         guy.setStop();
-        guy.setPosition(10, 15);
+        resetGuyPosition();
 
         scene.addCharacter(guy);
 
@@ -173,12 +163,11 @@ public class MainApplication extends SimpleApplication {
     private void makeScene() {
         scene = new Scene();
 
-        Node allNode = scene.getNode();
+        BitmapObstacleMap map = new BitmapObstacleMap(assetManager.loadTexture("Textures/map-small.png").getImage());
 
-        Quad q = new Quad(50,20);
-        Geometry g = new Geometry("lalala", q);
-        mapNode = new Node("map");
-        mapNode.attachChild(g);
+        scene.setMap(map);
+
+        Node allNode = scene.getNode();
 
         Texture mapTexture = assetManager.loadTexture("Textures/map-small.png");
         mapTexture.setMagFilter(Texture.MagFilter.Nearest);
@@ -203,10 +192,7 @@ public class MainApplication extends SimpleApplication {
         Material mapMat = new Material(assetManager, "Common/MatDefs/Misc/ColoredTextured.j3md");
         mapMat.setTexture("ColorMap", mapTexture);
 
-        mapNode.setMaterial(mapMat);
-        mapNode.setLocalTranslation(0, 0, -1f);
-
-        allNode.attachChild(mapNode);
+        scene.makeBackgroundPlate(mapMat);
 
         //testSprite = new AnimatedSprite(assetManager, "Textures/sprites.png", 8, 10, 8);
         //scene.addSprite(testSprite);
@@ -214,11 +200,15 @@ public class MainApplication extends SimpleApplication {
         rootNode.attachChild(allNode);
     }
 
+    private void resetGuyPosition(){
+        guy.setPosition(10, 10);
+    }
+
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean keyPressed, float tpf) {
             //log.info(name+" "+keyPressed);
             if (name.equals("ResetPosition")) {
-                guy.setPosition(10, 15);
+                resetGuyPosition();
             }
 
             int direction = 0;
